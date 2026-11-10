@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AcademiaVideoPreview } from "@/components/independizar/academia-video-preview";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -28,9 +29,6 @@ export default async function AcademiaCoursePage({ params }: { params: Promise<{
         <span className="font-semibold text-slate-900">{lesson.position}. {lesson.title}</span>
         <span className="text-sm text-slate-500">{lesson.duration_minutes != null ? `${lesson.duration_minutes} min` : "Lección"}</span>
       </li>)}</ol>}
-    <div className="mt-8 flex aspect-video flex-col items-center justify-center rounded-2xl bg-slate-900 p-6 text-center text-white">
-      <span className="text-5xl" aria-hidden="true">▶</span><p className="mt-4 font-semibold">Video de la lección</p>
-      <p className="mt-2 text-sm text-slate-300">El reproductor estará disponible cuando se habiliten las lecciones.</p>
-    </div>
+    <AcademiaVideoPreview />
   </main>;
 }
