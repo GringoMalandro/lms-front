@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, BookOpen, BrainCircuit, GraduationCap, PlayCircle } from "lucide-react";
+import { ArrowRight, BookOpen, BrainCircuit, GraduationCap, PlayCircle, UserRound, UsersRound } from "lucide-react";
 
 export function AcademyLanding({ locale }: { locale: string }) {
   const es = locale !== "en";
@@ -31,6 +31,23 @@ export function AcademyLanding({ locale }: { locale: string }) {
           <h2 className="mt-3 text-4xl font-bold">{es ? "Descubre lo que puedes aprender" : "Discover what you can learn"}</h2>
           <p className="mt-3 text-slate-600">{es ? "Tres niveles de inglés. Contenido próximamente." : "Three English levels. Course content coming soon."}</p>
           <div className="mt-10 grid gap-6 md:grid-cols-3">{courses.map(({ icon: Icon, title, description, label, style }) => <article key={title} className={`rounded-[2rem] bg-gradient-to-br ${style} p-8 text-white shadow-xl transition-transform duration-200 hover:-translate-y-1`}><div className="mb-8 inline-flex rounded-xl bg-white/15 p-4 text-white"><Icon size={30}/></div><h3 className="text-2xl font-bold">{title}</h3><p className="mt-4 min-h-16 text-white/85">{description}</p><span className="mt-6 inline-block rounded-full border border-white/25 bg-white/15 px-4 py-1 text-sm font-semibold text-white">{label}</span></article>)}</div>
+        </div>
+      </section>
+      <section id="instructor" className="bg-[#edf7f5] px-6 py-20">
+        <div className="mx-auto grid max-w-6xl items-center gap-10 rounded-[2rem] border border-[#008f89]/15 bg-white p-8 shadow-lg md:grid-cols-[auto_1fr] md:p-12">
+          <div className="flex h-36 w-36 items-center justify-center overflow-hidden rounded-full border-4 border-[#008f89] bg-gradient-to-br from-[#092b42] to-[#008f89] text-white shadow-lg" aria-label={es ? "Avatar provisional del instructor" : "Instructor placeholder avatar"}>
+            <UserRound size={76} strokeWidth={1.5} />
+          </div>
+          <div>
+            <p className="text-sm font-bold uppercase tracking-widest text-[#008f89]">{es ? "Conoce a tu instructor" : "Meet your instructor"}</p>
+            <h2 className="mt-2 text-4xl font-extrabold text-[#092b42]">Gringo Malandro</h2>
+            <p className="mt-3 flex items-center gap-2 font-semibold text-[#006c68]"><UsersRound size={19}/>{es ? "Influencer de redes sociales · 980 mil seguidores en todas sus plataformas" : "Social media influencer · 980K followers across platforms"}</p>
+            <p className="mt-4 max-w-2xl leading-relaxed text-slate-600">{es ? "Tu instructor de inglés en Independizar. Aprende a tu ritmo, desde el nivel básico hasta el avanzado." : "Your English instructor at Independizar. Learn at your own pace, from beginner to advanced."}</p>
+            <div className="mt-6 flex flex-wrap gap-2">
+              <span className="rounded-full bg-[#e0f5f1] px-4 py-2 text-sm font-semibold text-[#006c68]">{es ? "Clases de inglés" : "English classes"}</span>
+              <span className="rounded-full bg-[#e0f5f1] px-4 py-2 text-sm font-semibold text-[#006c68]">Independizar</span>
+            </div>
+          </div>
         </div>
       </section>
       <section id="planes" className="px-6 py-24">
