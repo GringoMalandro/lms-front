@@ -99,6 +99,7 @@ export async function Navbar({ headerSettings }: NavbarProps = {}) {
                             <Link href="/#cursos" className="text-sm font-medium text-muted-foreground hover:text-foreground">{isSpanish ? "Cursos" : "Courses"}</Link>
                             <Link href="/pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground">{isSpanish ? "Planes" : "Pricing"}</Link>
                             <Link href="/instructor" className="text-sm font-medium text-muted-foreground hover:text-foreground">{isSpanish ? "Instructor" : "Instructor"}</Link>
+                            <Link href="/faq" className="text-sm font-medium text-muted-foreground hover:text-foreground">{isSpanish ? "¿Preguntas frecuentes?" : "FAQ"}</Link>
                         </>
                     ) : isMainPlatform ? (
                         <>
