@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { getTranslations } from 'next-intl/server';
 import { getCurrentTenant } from "@/lib/supabase/tenant";
+import { getRequestBaseUrl } from "@/lib/seo";
 import { APP_NAME } from '@/lib/app-name';
 import { NavbarTenantSwitcher } from "@/components/tenant/navbar-tenant-switcher";
 import type { HeaderSettings } from "@/lib/landing-pages/types";
@@ -23,6 +24,7 @@ export async function Navbar({ headerSettings }: NavbarProps = {}) {
     const tenant = await getCurrentTenant();
 
     const isMainPlatform = !tenant || tenant.id === DEFAULT_TENANT_ID
+    const isAcademy = new URL(await getRequestBaseUrl()).hostname.replace(/^www\./, "") === "independizar.com"
 
     // Load branding overrides from tenant_settings. `setting_value` is jsonb, so
     // the stored shape is only a claim until it is read — anything that is not a
@@ -60,7 +62,7 @@ export async function Navbar({ headerSettings }: NavbarProps = {}) {
 
     const brandName = brandingOverrides.site_name || tenant?.name || APP_NAME;
     const logoUrl = brandingOverrides.logo_url || tenant?.logo_url;
-    const platformLogo = '/brand/logo-mark.svg';
+    const platformLogo = isAcademy ? '/independizar-logo.svg' : '/brand/logo-mark.svg';
 
     return (
         <nav className="fixed top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-md">
@@ -72,15 +74,15 @@ export async function Navbar({ headerSettings }: NavbarProps = {}) {
                         {logoUrl ? (
                             <img src={logoUrl} alt={brandName} className="w-8 h-8 rounded-lg object-cover" />
                         ) : isMainPlatform ? (
-                            <img src={platformLogo} alt={brandName} className="w-8 h-8" />
+                            <img src={platformLogo} alt={isAcademy ? "Independizar" : brandName} className={isAcademy ? "h-9 w-auto max-w-44" : "w-8 h-8"} />
                         ) : (
                             // The school's theme colour, via the tokens the layout resolved (#763).
                             <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-primary">
                                 <span className="font-bold text-primary-foreground">{brandName[0]?.toUpperCase()}</span>
                             </div>
                         )}
-                        <span className="font-bold text-lg text-foreground tracking-tight">
-                            {brandName}
+                        <span className={isAcademy ? "sr-only" : "font-bold text-lg text-foreground tracking-tight"}>
+                            {isAcademy ? "Independizar" : brandName}
                         </span>
                     </Link>
 
@@ -91,7 +93,11 @@ export async function Navbar({ headerSettings }: NavbarProps = {}) {
 
                 {/* Center Links */}
                 <div className="hidden md:flex items-center space-x-8">
-                    {isMainPlatform ? (
+                    {isAcademy ? (
+                        <>
+                            <Link href="/#cursos" className="text-sm font-medium text-muted-foreground hover:text-foreground">{(await getTranslations("navbar"))("courses")}</Link>
+                        </>
+                    ) : isMainPlatform ? (
                         <>
                             <Link href="/#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                                 {t('features')}
@@ -145,6 +151,10 @@ export async function Navbar({ headerSettings }: NavbarProps = {}) {
                             {headerSettings?.ctaText && headerSettings?.ctaLink ? (
                                 <Button className="font-medium" render={<Link href={headerSettings.ctaLink} />}>
                                     {headerSettings.ctaText}
+                                </Button>
+                            ) : isAcademy ? (
+                                <Button className="font-medium" render={<Link href="/#cursos" />}>
+                                    {t("courses")}
                                 </Button>
                             ) : isMainPlatform ? (
                                 <Button className="font-medium" render={<Link href="/create-school" />}>
