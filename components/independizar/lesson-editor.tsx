@@ -52,6 +52,29 @@ export function IndependizarLessonEditor({ courseId }: { courseId: string }) {
         <strong>{l.position}. {l.title}</strong> · {l.duration_minutes == null ? "Duración por definir" : l.duration_minutes + " min"} · {l.published ? "Publicada" : "Borrador"}
         {l.video_url && <span className="ml-2 text-blue-700">Video agregado</span>}
       </li>)}</ol>
+      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="border-b border-slate-100 px-5 py-4">
+          <p className="text-xs font-semibold uppercase tracking-wider text-blue-700">Vista previa de la lección</p>
+          <h3 className="mt-1 text-xl font-bold text-slate-900">{title.trim() || "Título de la lección"}</h3>
+          <p className="mt-1 text-sm text-slate-500">Curso en Independizar · {duration ? `${duration} min` : "Duración por definir"}</p>
+        </div>
+        <div className="p-4 sm:p-5">
+          <div className="flex aspect-video flex-col items-center justify-center rounded-xl bg-slate-900 px-4 text-center text-white" role="img" aria-label="Espacio reservado para el reproductor de video de la lección">
+            <span className="mb-3 flex h-16 w-16 items-center justify-center rounded-full border border-white/30 bg-white/15 text-3xl" aria-hidden="true">▶</span>
+            <span className="font-semibold">Video de la lección</span>
+            <span className="mt-1 text-sm text-slate-300">Aquí aparecerá el reproductor privado</span>
+            <span className="mt-3 rounded-full bg-white/10 px-3 py-1 text-xs text-slate-300">Vista de diseño · No es un video real</span>
+          </div>
+          <div className="mt-5">
+            <h4 className="font-semibold text-slate-900">Acerca de esta lección</h4>
+            <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-slate-600">{content.trim() || "Aquí aparecerán las explicaciones, los ejemplos y los materiales de la lección."}</p>
+          </div>
+          <div className="mt-5 rounded-xl border border-slate-200 bg-slate-50 p-4">
+            <p className="text-sm font-semibold text-slate-900">Contenido del curso</p>
+            <p className="mt-1 text-sm text-slate-500">{lessons.length} lecciones guardadas · La navegación entre lecciones se mostrará aquí.</p>
+          </div>
+        </div>
+      </div>
       <form onSubmit={save} className="grid gap-3">
         <label className="grid gap-1 text-sm">Título de la lección<input required className="rounded-lg border p-3" value={title} onChange={e => setTitle(e.target.value)} /></label>
         <label className="grid gap-1 text-sm">Contenido<textarea className="rounded-lg border p-3" value={content} onChange={e => setContent(e.target.value)} /></label>
