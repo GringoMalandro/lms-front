@@ -50,27 +50,7 @@ export function AcademyLanding({ locale }: { locale: string }) {
           </div>
         </div>
       </section>
-      <section id="planes" className="px-6 py-24">
-        <div className="mx-auto max-w-6xl">
-          <p className="font-semibold text-[#008f89]">{es ? "Planes de aprendizaje" : "Learning plans"}</p>
-          <h2 className="mt-3 text-4xl font-bold">{es ? "Elige cómo quieres aprender" : "Choose how you want to learn"}</h2>
-          <p className="mt-3 text-slate-600">{es ? "Planes previstos. Las suscripciones todavía no están disponibles." : "Planned tiers. Subscriptions are not available yet."}</p>
-          <div className="mt-10 grid gap-6 md:grid-cols-3">
-            {[
-              { name: es ? "Gratis" : "Free", price: "$0", detail: es ? "Una mini lección de inglés al día." : "One short English mini-lesson per day." },
-              { name: es ? "Básico" : "Basic", price: "$10", detail: es ? "Acceso limitado a lecciones y cursos seleccionados." : "Limited access to selected lessons and courses." },
-              { name: "Premium", price: "$50", detail: es ? "Acceso completo a los tres niveles de inglés." : "Full access to all three English levels." },
-            ].map(plan => (
-              <article key={plan.name} className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
-                <h3 className="text-2xl font-bold">{plan.name}</h3>
-                <p className="mt-5 text-4xl font-extrabold text-[#007f79]">{plan.price}<span className="text-base font-medium text-slate-500">{es ? "/mes" : "/month"}</span></p>
-                <p className="mt-5 text-slate-600">{plan.detail}</p>
-                <p className="mt-7 text-sm font-semibold text-[#007f79]">{es ? "Próximamente" : "Coming soon"}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
+
     </div>
   );
 }
