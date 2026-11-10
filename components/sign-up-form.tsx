@@ -42,9 +42,10 @@ const DEFAULT_TENANT_ID = '00000000-0000-0000-0000-000000000001'
 
 interface SignUpFormProps extends React.ComponentPropsWithoutRef<'div'> {
   tenantId?: string
+  isAcademy?: boolean
 }
 
-export function SignUpForm({ className, tenantId, ...props }: SignUpFormProps) {
+export function SignUpForm({ className, tenantId, isAcademy = false, ...props }: SignUpFormProps) {
   const t = useTranslations('auth.signup')
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
@@ -139,6 +140,8 @@ export function SignUpForm({ className, tenantId, ...props }: SignUpFormProps) {
         router.push('/auth/sign-up-success')
       } else if (nextPath) {
         router.push(nextPath)
+      } else if (isAcademy) {
+        router.push('/dashboard/student')
       } else if (tenantId === DEFAULT_TENANT_ID) {
         router.push('/create-school')
       } else {
