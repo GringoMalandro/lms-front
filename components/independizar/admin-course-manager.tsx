@@ -1,13 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from "@/lib/supabase/client";
 import { IndependizarAdminCourseOverview } from "./admin-course-overview";
 
 type Course = { id: string; title: string; description: string | null; published: boolean; lessonCount: number };
-const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-const supabase = url && key ? createClient(url, key) : null;
+const supabase = createClient();
 
 export function IndependizarAdminCourseManager() {
   const [courses, setCourses] = useState<Course[]>([]);
