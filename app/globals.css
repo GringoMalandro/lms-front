@@ -86,7 +86,7 @@
 :root {
   /* The platform palette is Estructura / Tinta azul (#766, owner decision
      settled). Every colour role below is `deriveKitVars('estructura',
-     '#3A50B8')` verbatim — the same values a school gets by picking Estructura
+     '#008F89')` verbatim — the same values a school gets by picking Estructura
      with its recommended colour, so "no theme" and "the default theme" are one
      screen instead of two palettes that drifted apart (the platform sat on
      shadcn zinc with a teal accent no kit could produce). Status colours,
@@ -104,7 +104,7 @@
   --card-foreground: oklch(0.2 0.02 262);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.2 0.02 262);
-  --primary: #3A50B8;
+  --primary: #008F89;
   --primary-foreground: oklch(0.99 0 0);
   --secondary: oklch(0.955 0.006 250);
   --secondary-foreground: oklch(0.2 0.02 262);
@@ -127,17 +127,17 @@
   --warning-foreground: oklch(0.99 0 0);
   /* Brand roles a theme kit derives (lib/themes/kit.ts). brand-text is AA text
      on background, card and brand-tint; brand-tint is a soft panel fill. */
-  --brand: #3A50B8;
-  --brand-text: #3A50B8;
-  --brand-tint: #e5eaf8;
+  --brand: #008F89;
+  --brand-text: #008F89;
+  --brand-tint: #e2f5f2;
   --border: oklch(0.9 0.01 250);
   --input: oklch(0.9 0.01 250);
-  --ring: #3A50B8;
-  --chart-1: #a0b1e3;
-  --chart-2: #788ed4;
-  --chart-3: #536bc5;
-  --chart-4: #3A50B8;
-  --chart-5: #24347c;
+  --ring: #008F89;
+  --chart-1: #a8e6de;
+  --chart-2: #70d1c6;
+  --chart-3: #36b4a8;
+  --chart-4: #008F89;
+  --chart-5: #00625e;
   --radius: 0.625rem;
   /* Per-component corners (#762) behind rounded-button / rounded-card /
      rounded-input. Registered self-referentially like the type roles, so
@@ -149,12 +149,12 @@
   --radius-input: calc(var(--radius) - 2px);
   --sidebar: oklch(0.985 0.004 250);
   --sidebar-foreground: oklch(0.2 0.02 262);
-  --sidebar-primary: #3A50B8;
+  --sidebar-primary: #008F89;
   --sidebar-primary-foreground: oklch(0.99 0 0);
   --sidebar-accent: oklch(0.955 0.006 250);
   --sidebar-accent-foreground: oklch(0.2 0.02 262);
   --sidebar-border: oklch(0.9 0.01 250);
-  --sidebar-ring: #3A50B8;
+  --sidebar-ring: #008F89;
   --background: oklch(0.985 0.004 250);
   --foreground: oklch(0.2 0.02 262);
 }
@@ -166,7 +166,7 @@
   --card-foreground: oklch(0.96 0.005 260);
   --popover: oklch(0.22 0.01 260);
   --popover-foreground: oklch(0.96 0.005 260);
-  --primary: #3A50B8;
+  --primary: #008F89;
   --primary-foreground: oklch(0.99 0 0);
   --secondary: oklch(0.27 0.01 260);
   --secondary-foreground: oklch(0.96 0.005 260);
@@ -180,25 +180,25 @@
   --success-foreground: oklch(0.2 0.02 262);
   --warning: oklch(0.83 0.15 80);
   --warning-foreground: oklch(0.2 0.02 262);
-  --brand: #3A50B8;
-  --brand-text: #939fd8;
-  --brand-tint: #1f273e;
+  --brand: #008F89;
+  --brand-text: #6fd5c9;
+  --brand-tint: #123b40;
   --border: oklch(0.32 0.01 260);
   --input: oklch(0.32 0.01 260);
-  --ring: #939fd8;
-  --chart-1: #a0b1e3;
-  --chart-2: #788ed4;
-  --chart-3: #536bc5;
-  --chart-4: #3A50B8;
-  --chart-5: #24347c;
+  --ring: #6fd5c9;
+  --chart-1: #a8e6de;
+  --chart-2: #70d1c6;
+  --chart-3: #36b4a8;
+  --chart-4: #008F89;
+  --chart-5: #00625e;
   --sidebar: oklch(0.22 0.01 260);
   --sidebar-foreground: oklch(0.96 0.005 260);
-  --sidebar-primary: #3A50B8;
+  --sidebar-primary: #008F89;
   --sidebar-primary-foreground: oklch(0.99 0 0);
   --sidebar-accent: oklch(0.27 0.01 260);
   --sidebar-accent-foreground: oklch(0.96 0.005 260);
   --sidebar-border: oklch(0.32 0.01 260);
-  --sidebar-ring: #939fd8;
+  --sidebar-ring: #6fd5c9;
 }
 
 @layer base {
