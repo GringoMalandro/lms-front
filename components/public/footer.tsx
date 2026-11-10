@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getCurrentTenant } from "@/lib/supabase/tenant";
-import { getTranslations } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
 import { getRequestBaseUrl } from "@/lib/seo";
 import { APP_NAME } from '@/lib/app-name';
 import { IconBrandTwitter, IconBrandFacebook, IconBrandInstagram, IconBrandYoutube, IconBrandLinkedin, IconBrandTiktok, IconBrandGithub } from '@tabler/icons-react'
@@ -25,12 +25,15 @@ interface FooterProps {
 export async function Footer({ footerSettings }: FooterProps = {}) {
     const tenant = await getCurrentTenant();
     const t = await getTranslations('landingPageBuilder.footer');
+    const locale = await getLocale();
+    const isSpanish = locale !== 'en';
     // Real product name (#730) when there's no tenant to brand this footer with
     // (the platform's own marketing pages).
     const platformName = APP_NAME;
     const isAcademy = new URL(await getRequestBaseUrl()).hostname.replace(/^www\./, "") === "independizar.com";
     const brandName = isAcademy ? "Independizar" : tenant && tenant.id !== DEFAULT_TENANT_ID ? tenant.name : platformName;
-    const slogan = isAcademy ? "Aprende. Crece. Sé libre." : null;
+    const slogan = isAcademy ? (isSpanish ? "Aprende. Crece. Sé libre." : "Learn. Grow. Be free.") : null;
+    const academyCopyright = isAcademy ? `© ${new Date().getFullYear()} Independizar. ${slogan} ${isSpanish ? "Un proyecto de Tren del Agua Inc. Todos los derechos reservados." : "A project of Tren del Agua Inc. All rights reserved."}` : null;
 
     // If footerSettings is provided, render custom footer
     if (footerSettings) {
@@ -85,11 +88,11 @@ export async function Footer({ footerSettings }: FooterProps = {}) {
                     </div>
 
                     <div className="mt-10 flex flex-wrap justify-center gap-5 text-sm text-muted-foreground">
-                    <Link href="/privacy" className="hover:text-foreground">{isAcademy ? "Política de privacidad" : "Privacy Policy"}</Link>
-                    <Link href="/terms" className="hover:text-foreground">{isAcademy ? "Términos de servicio" : "Terms of Service"}</Link>
+                    <Link href="/privacy" className="hover:text-foreground">{isAcademy && isSpanish ? "Política de privacidad" : "Privacy Policy"}</Link>
+                    <Link href="/terms" className="hover:text-foreground">{isAcademy && isSpanish ? "Términos de servicio" : "Terms of Service"}</Link>
                 </div>
                 <div className="mt-12 pt-8 border-t border-border text-center text-sm text-muted-foreground">
-                        {footerSettings.copyrightText || `\u00A9 ${new Date().getFullYear()} ${brandName}. ${t('allRightsReserved')}`}
+                        {academyCopyright ?? (footerSettings.copyrightText || `\u00A9 ${new Date().getFullYear()} ${brandName}. ${t('allRightsReserved')}`)}
                     </div>
                 </div>
             </footer>
@@ -132,7 +135,7 @@ export async function Footer({ footerSettings }: FooterProps = {}) {
                     <Link href="/terms" className="hover:text-foreground">{isAcademy ? "Términos de servicio" : "Terms of Service"}</Link>
                 </div>
                 <div className="mt-12 pt-8 border-t border-border text-center text-sm text-muted-foreground">
-                    &copy; {new Date().getFullYear()} {brandName}. {t('allRightsReserved')}
+                    {academyCopyright ?? <>© {new Date().getFullYear()} {brandName}. {t('allRightsReserved')}</>}
                 </div>
             </div>
         </footer>
