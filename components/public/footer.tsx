@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getCurrentTenant } from "@/lib/supabase/tenant";
 import { getTranslations } from 'next-intl/server';
+import { getRequestBaseUrl } from "@/lib/seo";
 import { APP_NAME } from '@/lib/app-name';
 import { IconBrandTwitter, IconBrandFacebook, IconBrandInstagram, IconBrandYoutube, IconBrandLinkedin, IconBrandTiktok, IconBrandGithub } from '@tabler/icons-react'
 import type { FooterSettings, SocialPlatform } from "@/lib/landing-pages/types";
@@ -27,7 +28,9 @@ export async function Footer({ footerSettings }: FooterProps = {}) {
     // Real product name (#730) when there's no tenant to brand this footer with
     // (the platform's own marketing pages).
     const platformName = APP_NAME;
-    const brandName = tenant && tenant.id !== DEFAULT_TENANT_ID ? tenant.name : platformName;
+    const isAcademy = new URL(await getRequestBaseUrl()).hostname.replace(/^www\./, "") === "independizar.com";
+    const brandName = isAcademy ? "Independizar" : tenant && tenant.id !== DEFAULT_TENANT_ID ? tenant.name : platformName;
+    const slogan = isAcademy ? "Aprende. Crece. Sé libre." : null;
 
     // If footerSettings is provided, render custom footer
     if (footerSettings) {
@@ -38,6 +41,7 @@ export async function Footer({ footerSettings }: FooterProps = {}) {
                         {/* Brand column */}
                         <div>
                             <h3 className="font-bold text-lg mb-4 text-foreground">{brandName}</h3>
+                            {slogan && <p className="mb-3 text-sm font-medium text-[#008f89]">{slogan}</p>}
                             {footerSettings.description && (
                                 <p className="text-muted-foreground text-sm">{footerSettings.description}</p>
                             )}
@@ -99,7 +103,7 @@ export async function Footer({ footerSettings }: FooterProps = {}) {
                     <div>
                         <h3 className="font-bold text-lg mb-4 text-foreground">{brandName}</h3>
                         <p className="text-muted-foreground text-sm">
-                            {t('defaultDescription')}
+                            {slogan ?? t('defaultDescription')}
                         </p>
                     </div>
 
