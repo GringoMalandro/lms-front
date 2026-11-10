@@ -2,7 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/language-switcher";
-import { getTranslations } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
 import { getCurrentTenant } from "@/lib/supabase/tenant";
 import { getRequestBaseUrl } from "@/lib/seo";
 import { APP_NAME } from '@/lib/app-name';
@@ -21,6 +21,7 @@ export async function Navbar({ headerSettings }: NavbarProps = {}) {
     const supabase = await createClient();
     const userId = await getCurrentUserId()
     const t = await getTranslations('navbar');
+    const isSpanish = (await getLocale()) !== 'en';
     const tenant = await getCurrentTenant();
 
     const isMainPlatform = !tenant || tenant.id === DEFAULT_TENANT_ID
@@ -95,7 +96,9 @@ export async function Navbar({ headerSettings }: NavbarProps = {}) {
                 <div className="hidden md:flex items-center space-x-8">
                     {isAcademy ? (
                         <>
-                            <Link href="/#cursos" className="text-sm font-medium text-muted-foreground hover:text-foreground">{(await getTranslations("navbar"))("courses")}</Link>
+                            <Link href="/#cursos" className="text-sm font-medium text-muted-foreground hover:text-foreground">{isSpanish ? "Cursos" : "Courses"}</Link>
+                            <Link href="/pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground">{isSpanish ? "Planes" : "Pricing"}</Link>
+                            <Link href="/#instructor" className="text-sm font-medium text-muted-foreground hover:text-foreground">{isSpanish ? "Instructor" : "Instructor"}</Link>
                         </>
                     ) : isMainPlatform ? (
                         <>
