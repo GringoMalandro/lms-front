@@ -19,5 +19,9 @@ export default async function IndependizarAdminPage({
   if (error || !user) redirect(`/${locale}/auth/login?next=/${locale}/admin-cursos`);
   if (user.app_metadata?.role !== "admin") notFound();
 
-  return <IndependizarAdminCourseManager />;
+  return (
+    <main className="pt-24 pb-8 md:pt-28">
+      <IndependizarAdminCourseManager />
+    </main>
+  );
 }
