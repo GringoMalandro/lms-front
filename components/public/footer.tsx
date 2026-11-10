@@ -99,6 +99,40 @@ export async function Footer({ footerSettings }: FooterProps = {}) {
         )
     }
 
+    if (isAcademy) {
+        return (
+            <footer className="border-t border-[#008f89]/20 bg-[#071d34] text-white">
+                <div className="container mx-auto px-6 py-12">
+                    <div className="grid gap-10 md:grid-cols-3">
+                        <div>
+                            <Link href="/" className="text-2xl font-bold">Independizar<span className="text-[#008f89]">.</span></Link>
+                            <p className="mt-3 text-sm text-slate-300">{slogan}</p>
+                            <p className="mt-3 text-sm text-slate-400">{isSpanish ? "Un proyecto de Tren del Agua Inc." : "A project of Tren del Agua Inc."}</p>
+                        </div>
+                        <div>
+                            <h3 className="mb-4 font-semibold text-white">{isSpanish ? "Explorar" : "Explore"}</h3>
+                            <nav className="flex flex-col gap-3 text-sm text-slate-300">
+                                <Link href="/courses" className="hover:text-[#4ad4c9]">{isSpanish ? "Cursos de inglés" : "English courses"}</Link>
+                                <Link href="/pricing" className="hover:text-[#4ad4c9]">{isSpanish ? "Planes" : "Plans"}</Link>
+                            </nav>
+                        </div>
+                        <div>
+                            <h3 className="mb-4 font-semibold text-white">{isSpanish ? "Información" : "Information"}</h3>
+                            <nav className="flex flex-col gap-3 text-sm text-slate-300">
+                                <Link href="/privacy" className="hover:text-[#4ad4c9]">{isSpanish ? "Política de privacidad" : "Privacy Policy"}</Link>
+                                <Link href="/terms" className="hover:text-[#4ad4c9]">{isSpanish ? "Términos de servicio" : "Terms of Service"}</Link>
+                                <a href="mailto:independizar@trendelagua.com" className="break-all hover:text-[#4ad4c9]">independizar@trendelagua.com</a>
+                            </nav>
+                        </div>
+                    </div>
+                    <div className="mt-10 border-t border-white/15 pt-6 text-center text-sm text-slate-400">
+                        © {new Date().getFullYear()} Independizar. {slogan} {isSpanish ? "Un proyecto de Tren del Agua Inc. Todos los derechos reservados." : "A project of Tren del Agua Inc. All rights reserved."}
+                    </div>
+                </div>
+            </footer>
+        );
+    }
+
     // Default footer (#730): every link must resolve to a route that
     // actually exists under app/[locale]/(public)/ — a school that hasn't
     // configured its own footer yet gets Courses, Pricing and About, not
