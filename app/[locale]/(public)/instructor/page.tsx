@@ -22,7 +22,7 @@ export default async function InstructorPage({ params }: { params: Promise<{loca
       </div>
       <section className="mt-12 rounded-[2rem] border border-[#008f89]/20 bg-white p-8 shadow-sm md:p-10">
         <div className="flex items-center gap-3 text-[#007f79]"><BookOpen size={28}/><h2 className="text-2xl font-bold">{es ? "Clases de inglés" : "English classes"}</h2></div>
-        <p className="mt-4 text-slate-600">{es ? "Explora los niveles Básico (A1–A2), Intermedio (B1–B2) y Avanzado (C1–C2). Las lecciones estarán disponibles próximamente." : "Explore Beginner (A1–A2), Intermediate (B1–B2), and Advanced (C1–C2) levels. Lessons are coming soon."}</p>
+        <p className="mt-4 text-slate-600">{es ? "Explora los niveles Básico, Intermedio y Avanzado. Las lecciones estarán disponibles próximamente." : "Explore Beginner, Intermediate, and Advanced levels. Lessons are coming soon."}</p>
         <Link href="/#cursos" className="mt-6 inline-block rounded-xl bg-[#008f89] px-6 py-3 font-semibold text-white hover:bg-[#006c68]">{es ? "Explorar cursos" : "Explore courses"}</Link>
       </section>
     </div>
