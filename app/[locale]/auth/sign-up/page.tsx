@@ -2,6 +2,7 @@ import { SignUpForm } from '@/components/sign-up-form'
 import { getCurrentTenantId } from '@/lib/supabase/tenant'
 import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
+import { getRequestBaseUrl } from '@/lib/seo'
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params
@@ -10,12 +11,13 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 }
 
 export default async function Page() {
-  const tenantId = await getCurrentTenantId()
+  const isAcademy = new URL(await getRequestBaseUrl()).hostname.replace(/^www\./, '') === 'independizar.com'
+  const tenantId = isAcademy ? undefined : await getCurrentTenantId()
 
   return (
     <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
       <div className="w-full max-w-sm">
-        <SignUpForm tenantId={tenantId} />
+        <SignUpForm tenantId={tenantId} isAcademy={isAcademy} />
       </div>
     </div>
   )
