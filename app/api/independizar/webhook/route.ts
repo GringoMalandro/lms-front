@@ -7,7 +7,7 @@ export const runtime = "nodejs";
 const ALLOWED = new Set(["price_1UaKwkD3V5I3NEtSOeabfZ7j", "price_1UaKx7D3V5I3NEtSdRNS5dLH"]);
 
 async function syncSubscription(subscription: Stripe.Subscription) {
-  const userId = subscription.metadata?.independizar_user_id;
+  let userId = subscription.metadata?.independizar_user_id;\n  if (!userId) {\n    const customerId = typeof subscription.customer === "string" ? subscription.customer : subscription.customer.id;\n    const customer = await getStripe().customers.retrieve(customerId);\n    if (!customer.deleted) userId = customer.metadata?.independizar_user_id;\n  }
   if (!userId || !/^[0-9a-f-]{36}$/i.test(userId)) return;
   const priceId = subscription.items.data.find(item => ALLOWED.has(item.price.id))?.price.id;
   if (!priceId) return;
