@@ -16,7 +16,7 @@ export default async function IndependizarAdminPage({
 
   const supabase = await createClient();
   const { data: { user }, error } = await supabase.auth.getUser();
-  if (error || !user) redirect(`/${locale}/login`);
+  if (error || !user) redirect(`/${locale}/auth/login?next=/${locale}/admin-cursos`);
   if (user.app_metadata?.role !== "admin") notFound();
 
   return <IndependizarAdminCourseManager />;
