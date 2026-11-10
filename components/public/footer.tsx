@@ -105,7 +105,7 @@ export async function Footer({ footerSettings }: FooterProps = {}) {
                 <div className="container mx-auto px-6 py-12">
                     <div className="grid gap-10 md:grid-cols-3">
                         <div>
-                            <Link href="/" className="text-2xl font-bold">Independizar<span className="text-[#008f89]">.</span></Link>
+                            <Link href="/" className="inline-flex items-center gap-3 text-2xl font-bold"><img src="/independizar-logo.svg" alt="Independizar" className="h-12 w-12 object-contain" /><span>Independizar<span className="text-[#008f89]">.</span></span></Link>
                             <p className="mt-3 text-sm text-slate-300">{slogan}</p>
                             <p className="mt-3 text-sm text-slate-400">{isSpanish ? "Un proyecto de Tren del Agua Inc." : "A project of Tren del Agua Inc."}</p>
                         </div>
