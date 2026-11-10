@@ -4,9 +4,9 @@ import { ArrowRight, BookOpen, BrainCircuit, GraduationCap, PlayCircle, UserRoun
 export function AcademyLanding({ locale }: { locale: string }) {
   const es = locale !== "en";
   const courses = [
-    { icon: BookOpen, title: es ? "Inglés Básico" : "Beginner English", description: es ? "Niveles A1–A2. Vocabulario, frases y conversaciones cotidianas." : "Levels A1–A2. Vocabulary, phrases, and everyday conversations.", label: "A1–A2", style: "from-[#092b42] to-[#17617a]" },
-    { icon: PlayCircle, title: es ? "Inglés Intermedio" : "Intermediate English", description: es ? "Niveles B1–B2. Conversación, comprensión, trabajo y viajes." : "Levels B1–B2. Conversation, comprehension, work, and travel.", label: "B1–B2", style: "from-[#007f79] to-[#20a99b]" },
-    { icon: BrainCircuit, title: es ? "Inglés Avanzado" : "Advanced English", description: es ? "Niveles C1–C2. Comunicación fluida y temas profesionales." : "Levels C1–C2. Fluent communication and professional topics.", label: "C1–C2", style: "from-[#12385d] to-[#006c68]" },
+    { icon: BookOpen, title: es ? "Inglés Básico" : "Beginner English", description: es ? "Aprende desde cero: palabras, frases útiles y conversaciones del día a día." : "Start from scratch with useful words, phrases, and everyday conversations.", label: es ? "Para empezar" : "Getting started", style: "from-[#092b42] to-[#17617a]" },
+    { icon: PlayCircle, title: es ? "Inglés Intermedio" : "Intermediate English", description: es ? "Mejora tus conversaciones y aprende a comunicarte en el trabajo y al viajar." : "Build conversation skills for work, travel, and everyday situations.", label: es ? "Para conversar" : "Build confidence", style: "from-[#007f79] to-[#20a99b]" },
+    { icon: BrainCircuit, title: es ? "Inglés Avanzado" : "Advanced English", description: es ? "Habla con más naturalidad, expresa ideas complejas y domina conversaciones profesionales." : "Speak naturally, express complex ideas, and handle professional conversations.", label: es ? "Para dominar el idioma" : "Master the language", style: "from-[#12385d] to-[#006c68]" },
   ];
   return (
     <div className="bg-[#f7fbfa] text-[#092b42]">
