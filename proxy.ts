@@ -61,6 +61,8 @@ const PLATFORM_HOSTS = [
   'localhost',
   '127.0.0.1',
   PLATFORM_DOMAIN,
+  'independizar.com',
+  'www.independizar.com',
 ]
 
 // Create i18n middleware
