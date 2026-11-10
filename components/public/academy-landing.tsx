@@ -4,9 +4,9 @@ import { ArrowRight, BookOpen, BrainCircuit, GraduationCap, PlayCircle } from "l
 export function AcademyLanding({ locale }: { locale: string }) {
   const es = locale !== "en";
   const courses = [
-    { icon: BookOpen, title: es ? "Inglés Básico" : "Beginner English", description: es ? "Niveles A1–A2. Vocabulario, frases y conversaciones cotidianas." : "Levels A1–A2. Vocabulary, phrases, and everyday conversations.", label: "A1–A2" },
-    { icon: PlayCircle, title: es ? "Inglés Intermedio" : "Intermediate English", description: es ? "Niveles B1–B2. Conversación, comprensión, trabajo y viajes." : "Levels B1–B2. Conversation, comprehension, work, and travel.", label: "B1–B2" },
-    { icon: BrainCircuit, title: es ? "Inglés Avanzado" : "Advanced English", description: es ? "Niveles C1–C2. Comunicación fluida y temas profesionales." : "Levels C1–C2. Fluent communication and professional topics.", label: "C1–C2" },
+    { icon: BookOpen, title: es ? "Inglés Básico" : "Beginner English", description: es ? "Niveles A1–A2. Vocabulario, frases y conversaciones cotidianas." : "Levels A1–A2. Vocabulary, phrases, and everyday conversations.", label: "A1–A2", style: "from-[#092b42] to-[#17617a]" },
+    { icon: PlayCircle, title: es ? "Inglés Intermedio" : "Intermediate English", description: es ? "Niveles B1–B2. Conversación, comprensión, trabajo y viajes." : "Levels B1–B2. Conversation, comprehension, work, and travel.", label: "B1–B2", style: "from-[#007f79] to-[#20a99b]" },
+    { icon: BrainCircuit, title: es ? "Inglés Avanzado" : "Advanced English", description: es ? "Niveles C1–C2. Comunicación fluida y temas profesionales." : "Levels C1–C2. Fluent communication and professional topics.", label: "C1–C2", style: "from-[#12385d] to-[#006c68]" },
   ];
   return (
     <div className="bg-[#f7fbfa] text-[#092b42]">
@@ -30,7 +30,7 @@ export function AcademyLanding({ locale }: { locale: string }) {
           <p className="font-semibold text-[#008f89]">{es ? "Nuestra oferta educativa" : "Our courses"}</p>
           <h2 className="mt-3 text-4xl font-bold">{es ? "Descubre lo que puedes aprender" : "Discover what you can learn"}</h2>
           <p className="mt-3 text-slate-600">{es ? "Tres niveles de inglés. Contenido próximamente." : "Three English levels. Course content coming soon."}</p>
-          <div className="mt-10 grid gap-6 md:grid-cols-3">{courses.map(({ icon: Icon, title, description, label }) => <article key={title} className="rounded-2xl border border-slate-200 bg-[#f8fbfa] p-7 shadow-sm"><div className="mb-6 inline-flex rounded-xl bg-[#dff5f1] p-4 text-[#007f79]"><Icon size={30}/></div><h3 className="text-2xl font-bold">{title}</h3><p className="mt-3 min-h-16 text-slate-600">{description}</p><span className="mt-5 inline-block rounded-full bg-slate-100 px-3 py-1 text-sm text-slate-600">{label}</span></article>)}</div>
+          <div className="mt-10 grid gap-6 md:grid-cols-3">{courses.map(({ icon: Icon, title, description, label, style }) => <article key={title} className={`rounded-[2rem] bg-gradient-to-br ${style} p-8 text-white shadow-xl transition-transform duration-200 hover:-translate-y-1`}><div className="mb-8 inline-flex rounded-xl bg-white/15 p-4 text-white"><Icon size={30}/></div><h3 className="text-2xl font-bold">{title}</h3><p className="mt-4 min-h-16 text-white/85">{description}</p><span className="mt-6 inline-block rounded-full border border-white/25 bg-white/15 px-4 py-1 text-sm font-semibold text-white">{label}</span></article>)}</div>
         </div>
       </section>
       <section id="planes" className="px-6 py-24">
