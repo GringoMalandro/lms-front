@@ -1,0 +1,38 @@
+import Link from "next/link";
+import { ArrowRight, BookOpen, BrainCircuit, GraduationCap, PlayCircle } from "lucide-react";
+
+export function AcademyLanding({ locale }: { locale: string }) {
+  const es = locale !== "en";
+  const courses = [
+    { icon: BookOpen, title: es ? "Inglés desde cero" : "English from scratch", description: es ? "Empieza con vocabulario, frases y fundamentos." : "Start with vocabulary, phrases, and the basics.", label: es ? "Próximamente" : "Coming soon" },
+    { icon: PlayCircle, title: es ? "Inglés conversacional" : "Conversational English", description: es ? "Practica situaciones y conversaciones cotidianas." : "Practice everyday situations and conversations.", label: es ? "Próximamente" : "Coming soon" },
+    { icon: BrainCircuit, title: es ? "Inteligencia artificial" : "Artificial intelligence", description: es ? "Aprende herramientas y conceptos de IA." : "Learn AI tools and concepts.", label: es ? "Próximamente" : "Coming soon" },
+  ];
+  return (
+    <div className="bg-[#f7fbfa] text-[#092b42]">
+      <section className="mx-auto grid max-w-6xl items-center gap-12 px-6 pb-24 pt-36 md:grid-cols-2">
+        <div>
+          <span className="rounded-full bg-[#dff5f1] px-4 py-2 text-sm font-semibold text-[#006c68]">{es ? "Tu academia en línea" : "Your online academy"}</span>
+          <h1 className="mt-7 text-5xl font-extrabold leading-tight tracking-tight md:text-6xl">{es ? "Aprende inglés. Abre nuevas puertas." : "Learn English. Open new doors."}</h1>
+          <p className="mt-6 max-w-xl text-lg leading-relaxed text-slate-600">{es ? "Cursos en español para aprender inglés a tu ritmo. Próximamente, también inteligencia artificial y nuevas habilidades." : "Courses designed to help you learn English at your own pace. AI and new skills are coming next."}</p>
+          <div className="mt-9 flex flex-wrap gap-3">
+            <Link href="#cursos" className="inline-flex items-center gap-2 rounded-xl bg-[#008f89] px-6 py-4 font-semibold text-white hover:bg-[#006c68]">{es ? "Explorar cursos" : "Explore courses"}<ArrowRight size={18}/></Link>
+            <Link href="/auth/login" className="rounded-xl border border-[#008f89] px-6 py-4 font-semibold text-[#006c68]">{es ? "Iniciar sesión" : "Sign in"}</Link>
+          </div>
+        </div>
+        <div className="rounded-[2rem] bg-gradient-to-br from-[#092b42] to-[#007f79] p-9 text-white shadow-xl">
+          <div className="flex items-center gap-3"><GraduationCap size={38}/><span className="text-xl font-bold">Independizar</span></div>
+          <div className="mt-16 rounded-2xl bg-white/10 p-7 backdrop-blur-sm"><p className="text-sm uppercase tracking-widest text-teal-100">{es ? "Aprende a tu ritmo" : "Learn at your pace"}</p><p className="mt-4 text-3xl font-bold">{es ? "Tu próximo capítulo comienza aquí." : "Your next chapter starts here."}</p></div>
+        </div>
+      </section>
+      <section id="cursos" className="bg-white px-6 py-24">
+        <div className="mx-auto max-w-6xl">
+          <p className="font-semibold text-[#008f89]">{es ? "Nuestra oferta educativa" : "Our courses"}</p>
+          <h2 className="mt-3 text-4xl font-bold">{es ? "Descubre lo que puedes aprender" : "Discover what you can learn"}</h2>
+          <p className="mt-3 text-slate-600">{es ? "Estamos preparando nuestros primeros cursos." : "We're preparing our first courses."}</p>
+          <div className="mt-10 grid gap-6 md:grid-cols-3">{courses.map(({ icon: Icon, title, description, label }) => <article key={title} className="rounded-2xl border border-slate-200 bg-[#f8fbfa] p-7 shadow-sm"><div className="mb-6 inline-flex rounded-xl bg-[#dff5f1] p-4 text-[#007f79]"><Icon size={30}/></div><h3 className="text-2xl font-bold">{title}</h3><p className="mt-3 min-h-16 text-slate-600">{description}</p><span className="mt-5 inline-block rounded-full bg-slate-100 px-3 py-1 text-sm text-slate-600">{label}</span></article>)}</div>
+        </div>
+      </section>
+    </div>
+  );
+}
