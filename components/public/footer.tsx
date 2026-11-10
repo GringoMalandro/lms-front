@@ -84,7 +84,11 @@ export async function Footer({ footerSettings }: FooterProps = {}) {
                         ))}
                     </div>
 
-                    <div className="mt-12 pt-8 border-t border-border text-center text-sm text-muted-foreground">
+                    <div className="mt-10 flex flex-wrap justify-center gap-5 text-sm text-muted-foreground">
+                    <Link href="/privacy" className="hover:text-foreground">{isAcademy ? "Política de privacidad" : "Privacy Policy"}</Link>
+                    <Link href="/terms" className="hover:text-foreground">{isAcademy ? "Términos de servicio" : "Terms of Service"}</Link>
+                </div>
+                <div className="mt-12 pt-8 border-t border-border text-center text-sm text-muted-foreground">
                         {footerSettings.copyrightText || `\u00A9 ${new Date().getFullYear()} ${brandName}. ${t('allRightsReserved')}`}
                     </div>
                 </div>
@@ -123,6 +127,10 @@ export async function Footer({ footerSettings }: FooterProps = {}) {
                     </div>
                 </div>
 
+                <div className="mt-10 flex flex-wrap justify-center gap-5 text-sm text-muted-foreground">
+                    <Link href="/privacy" className="hover:text-foreground">{isAcademy ? "Política de privacidad" : "Privacy Policy"}</Link>
+                    <Link href="/terms" className="hover:text-foreground">{isAcademy ? "Términos de servicio" : "Terms of Service"}</Link>
+                </div>
                 <div className="mt-12 pt-8 border-t border-border text-center text-sm text-muted-foreground">
                     &copy; {new Date().getFullYear()} {brandName}. {t('allRightsReserved')}
                 </div>
