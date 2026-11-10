@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { IndependizarAdminCourseOverview } from "./admin-course-overview";
+import { IndependizarLessonEditor } from "./lesson-editor";
 
 type Course = { id: string; title: string; description: string | null; published: boolean; lessonCount: number; duration_minutes: number | null; level: string | null; cover_color: string | null };
 const supabase = createClient();
@@ -84,6 +85,7 @@ export function IndependizarAdminCourseManager() {
                 {course.published ? "Despublicar" : "Publicar"}
               </button>
               </div>
+              <div className="px-4 pb-4"><IndependizarLessonEditor courseId={course.id} /></div>
             </li>
           ))}
         </ul>
