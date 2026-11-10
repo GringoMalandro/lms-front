@@ -3,6 +3,7 @@ import { getCurrentTenantId, getCurrentTenant } from "@/lib/supabase/tenant";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { PlatformLanding } from "@/components/public/platform-landing";
+import { AcademyLanding } from "@/components/public/academy-landing";
 import { SchoolLandingPage } from "@/components/public/school-landing-page";
 import type { Metadata } from "next";
 import { buildPageMetadata, getRequestBaseUrl } from "@/lib/seo";
@@ -42,7 +43,12 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return buildPageMetadata({ title: t('home.title'), description: t('defaultDescription'), path: '/', locale })
 }
 
-export default async function LandingPage() {
+export default async function LandingPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const baseUrl = await getRequestBaseUrl();
+  if (new URL(baseUrl).hostname.replace(/^www\\./, "") === "independizar.com") {
+    return <AcademyLanding locale={locale} />;
+  }
   // Branch to school landing page on subdomains
   const tenantId = await getCurrentTenantId()
   if (tenantId !== DEFAULT_TENANT_ID) {
