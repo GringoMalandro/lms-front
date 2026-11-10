@@ -21,8 +21,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Los pagos aún no están habilitados. Vuelve pronto." }, { status: 503 });
   }
   const stripe = getStripe();
-  const customers = await stripe.customers.list({ email: user.email, limit: 1 });
-  const customer = customers.data[0] ?? await stripe.customers.create({ email: user.email, metadata: { independizar_user_id: user.id } });
+  const customers = await stripe.customers.list({ email: user.email, limit: 100 });
+  const customer = customers.data.find(c => c.metadata?.independizar_user_id === user.id) ?? await stripe.customers.create({ email: user.email, metadata: { independizar_user_id: user.id } });
   const existing = await stripe.subscriptions.list({ customer: customer.id, status: "all", limit: 100 });
   if (existing.data.some(s => ["active", "trialing", "past_due", "unpaid"].includes(s.status) && s.items.data.some(item => Object.values(PRICE_IDS).includes(item.price.id as typeof PRICE_IDS[keyof typeof PRICE_IDS])))) {
     return NextResponse.redirect(new URL(`/${locale}/suscripciones/gestionar`, origin), 303);
