@@ -36,7 +36,14 @@ export default async function StudentAccount({ params }: { params: Promise<{ loc
     <main className="mx-auto min-h-screen max-w-4xl space-y-10 px-5 pb-16 pt-28">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <h1 className="text-4xl font-bold">{english ? 'My account' : 'Mi cuenta'}</h1>
-        <LogoutButton label={english ? 'Sign out' : 'Cerrar sesión'} />
+        <div className="flex flex-wrap items-center gap-3">
+          {user.app_metadata?.role === 'admin' && (
+            <Link href={`/${locale}/admin-cursos`} className="font-medium underline">
+              {english ? 'Manage courses' : 'Administrar cursos'}
+            </Link>
+          )}
+          <LogoutButton label={english ? 'Sign out' : 'Cerrar sesión'} />
+        </div>
       </div>
       <section className="max-w-md rounded-xl border p-5">
         <h2 className="text-xl font-bold">{english ? 'Profile' : 'Perfil'}</h2>

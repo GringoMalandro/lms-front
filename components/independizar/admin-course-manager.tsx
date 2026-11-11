@@ -1,96 +1,204 @@
-"use client";
+'use client'
 
-import { useCallback, useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
-import { IndependizarAdminCourseOverview } from "./admin-course-overview";
-import { IndependizarLessonEditor } from "./lesson-editor";
+import { useCallback, useEffect, useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
+import { fetchAllRows } from '@/lib/supabase/fetch-all-rows'
+import { nextPosition, toOne, type CourseLevel, type CourseModule } from '@/lib/independizar/course-management'
+import { AdminForm, field, httpsField, LongField, numberField, Publication, SelectField, TextField } from './admin-fields'
+import { IndependizarAdminCourseOverview } from './admin-course-overview'
+import { IndependizarLessonEditor, type ManagedLesson } from './lesson-editor'
 
-type Course = { id: string; title: string; description: string | null; published: boolean; lessonCount: number; duration_minutes: number | null; level: string | null; cover_color: string | null };
-const supabase = createClient();
+type Course = {
+  id: string
+  title: string
+  description: string | null
+  level: string | null
+  required_tier: string
+  position: number
+  duration_minutes: number | null
+  cover_image_url: string | null
+  published: boolean
+}
+
+function CourseForm({ course, position, refresh }: { course?: Course; position: number; refresh: () => Promise<void> }) {
+  async function save(data: FormData) {
+    const values = {
+      title: field(data, 'title'),
+      description: field(data, 'description') || null,
+      level: field(data, 'level') || null,
+      required_tier: field(data, 'required_tier'),
+      position: numberField(data, 'position') ?? position,
+      duration_minutes: numberField(data, 'duration_minutes'),
+      cover_image_url: httpsField(data, 'cover_image_url', 'Portada'),
+      published: field(data, 'published') === 'yes',
+    }
+    if (!values.title) throw new Error('Introduce un título.')
+    const query = createClient().from('courses')
+    const result = course ? await query.update(values).eq('id', course.id).select('id').single()
+      : await query.insert(values).select('id').single()
+    if (result.error) throw new Error(result.error.message)
+    await refresh()
+  }
+
+  return <AdminForm save={save} reset={!course} label={course ? 'Guardar curso' : 'Crear curso'}>
+    <TextField name="title" label="Título del curso" value={course?.title} required />
+    <TextField name="cover_image_url" label="Enlace HTTPS de la portada" type="url" value={course?.cover_image_url} />
+    <LongField name="description" label="Descripción" value={course?.description} />
+    <SelectField name="level" label="Dificultad" value={course?.level}>
+      <option value="">Sin definir</option>
+      {['Básico', 'Intermedio', 'Avanzado'].map((level) => <option key={level}>{level}</option>)}
+    </SelectField>
+    <SelectField name="required_tier" label="Membresía requerida" value={course?.required_tier ?? 'basic'}>
+      <option value="basic">Básico</option><option value="premium">Premium</option>
+    </SelectField>
+    <TextField name="position" label="Orden" type="number" value={course?.position ?? position} required />
+    <TextField name="duration_minutes" label="Duración estimada (minutos)" type="number" value={course?.duration_minutes} />
+    <Publication value={course?.published} />
+  </AdminForm>
+}
+
+function CurriculumForm({ courseId, levels, levelId, row, position, refresh }: {
+  courseId: string
+  levels: readonly CourseLevel[]
+  levelId?: string
+  row?: CourseLevel
+  position: number
+  refresh: () => Promise<void>
+}) {
+  const noun = levelId ? 'módulo' : 'nivel'
+  async function save(data: FormData) {
+    const values = {
+      course_id: courseId,
+      title: field(data, 'title'),
+      position: numberField(data, 'position') ?? position,
+      ...(levelId ? { level_id: field(data, 'level_id') } : {}),
+    }
+    if (!values.title) throw new Error('Introduce un nombre.')
+    const query = createClient().from(levelId ? 'course_modules' : 'course_levels')
+    const result = row ? await query.update(values).eq('id', row.id).select('id').single()
+      : await query.insert(values).select('id').single()
+    if (result.error) throw new Error(result.error.message)
+    await refresh()
+  }
+
+  return <AdminForm save={save} reset={!row} label={row ? `Guardar ${noun}` : `Crear ${noun}`}>
+    <TextField name="title" label={`Nombre del ${noun}`} value={row?.title} required />
+    <TextField name="position" label="Orden" type="number" value={row?.position ?? position} required />
+    {levelId && <SelectField name="level_id" label="Nivel" value={levelId}>
+      {levels.map((level) => <option key={level.id} value={level.id}>{level.title}</option>)}
+    </SelectField>}
+  </AdminForm>
+}
+
+function Curriculum({ courseId }: { courseId: string }) {
+  const [levels, setLevels] = useState<CourseLevel[]>([])
+  const [modules, setModules] = useState<CourseModule[]>([])
+  const [lessons, setLessons] = useState<ManagedLesson[]>([])
+  const [status, setStatus] = useState('Cargando contenido…')
+  const [loaded, setLoaded] = useState(false)
+
+  const refresh = useCallback(() => {
+    const supabase = createClient()
+    return Promise.all([
+        fetchAllRows('course levels', (from, to) => supabase.from('course_levels').select('id,title,position', { count: 'exact' })
+          .eq('course_id', courseId).order('position').order('id').range(from, to)),
+        fetchAllRows('course modules', (from, to) => supabase.from('course_modules').select('id,title,position,level_id', { count: 'exact' })
+          .eq('course_id', courseId).order('position').order('id').range(from, to)),
+        fetchAllRows('course lessons', (from, to) => supabase.from('lessons')
+          .select('id,title,position,module_id,content,vocabulary,video_url,duration_minutes,published,lesson_quizzes(questions,passing_score,published)', { count: 'exact' })
+          .eq('course_id', courseId).order('position').order('id').range(from, to)),
+    ]).then(([levelRows, moduleRows, lessonRows]) => {
+      setLevels(levelRows)
+      setModules(moduleRows)
+      setLessons(lessonRows.map((lesson) => ({ ...lesson, lesson_quizzes: toOne(lesson.lesson_quizzes) })))
+      setLoaded(true)
+      setStatus('')
+    }).catch(() => {
+      setStatus('No se pudo cargar el contenido. Vuelve a abrir el curso.')
+    })
+  }, [courseId])
+
+  useEffect(() => { void refresh() }, [refresh])
+
+  function lessonEditors(moduleId: string | null) {
+    const rows = lessons.filter((lesson) => lesson.module_id === moduleId)
+    return <>
+      {rows.map((lesson) => <IndependizarLessonEditor key={lesson.id} courseId={courseId} modules={modules}
+        moduleId={moduleId} position={lesson.position} lesson={lesson} refresh={refresh} />)}
+      {moduleId && <IndependizarLessonEditor key={nextPosition(rows)} courseId={courseId} modules={modules}
+        moduleId={moduleId} position={nextPosition(rows)} refresh={refresh} />}
+    </>
+  }
+
+  return <section className="space-y-4">
+    <h3 className="text-lg font-semibold">Contenido del curso</h3>
+    {status && <p role={loaded || status.startsWith('No') ? 'alert' : 'status'}>{status}</p>}
+    {loaded && <>
+      <details className="rounded-lg border p-3">
+        <summary className="mb-2 cursor-pointer font-medium">Nuevo nivel</summary>
+        <CurriculumForm key={nextPosition(levels)} courseId={courseId} levels={levels}
+          position={nextPosition(levels)} refresh={refresh} />
+      </details>
+      {levels.map((level) => {
+        const levelModules = modules.filter((module) => module.level_id === level.id)
+        return <details key={level.id} className="space-y-3 rounded-lg border p-3">
+          <summary className="cursor-pointer font-semibold">{level.position}. {level.title}</summary>
+          <CurriculumForm courseId={courseId} levels={levels} row={level} position={level.position} refresh={refresh} />
+          <details className="rounded-lg border p-3">
+            <summary className="mb-2 cursor-pointer font-medium">Nuevo módulo</summary>
+            <CurriculumForm key={nextPosition(levelModules)} courseId={courseId} levels={levels}
+              levelId={level.id} position={nextPosition(levelModules)} refresh={refresh} />
+          </details>
+          {levelModules.map((module) => <details key={module.id} className="space-y-3 rounded-lg border p-3">
+            <summary className="cursor-pointer font-medium">{module.position}. {module.title}</summary>
+            <CurriculumForm courseId={courseId} levels={levels} row={module} levelId={level.id} position={module.position} refresh={refresh} />
+            {lessonEditors(module.id)}
+          </details>)}
+        </details>
+      })}
+      {lessons.some((lesson) => lesson.module_id === null) && <section className="space-y-2">
+        <h4 className="font-medium">Lecciones sin módulo</h4>
+        {lessonEditors(null)}
+      </section>}
+    </>}
+  </section>
+}
 
 export function IndependizarAdminCourseManager() {
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [authorized, setAuthorized] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [duration, setDuration] = useState("");
-  const [level, setLevel] = useState("Básico");
-  const [error, setError] = useState("");
+  const [courses, setCourses] = useState<Course[]>([])
+  const [selected, setSelected] = useState<string | null>(null)
+  const [status, setStatus] = useState('Cargando cursos…')
 
-  const refresh = useCallback(async () => {
-    if (!supabase) { setError("Falta configurar Supabase."); setLoading(false); return; }
-    const { data: userData, error: authError } = await supabase.auth.getUser();
-    if (authError || !userData.user) { setError("Inicia sesión como administrador."); setLoading(false); return; }
-    // The database independently enforces admin permissions through RLS.
-    if (userData.user.app_metadata?.role !== "admin") {
-      setError("No tienes acceso de administrador."); setLoading(false); return;
-    }
-    setAuthorized(true);
-    const { data, error: readError } = await supabase.from("courses").select("id,title,description,published,duration_minutes,level,cover_color,lessons(id)").order("created_at", { ascending: false });
-    if (readError) setError(readError.message);
-    else setCourses((data || []).map((c) => ({ id: c.id, title: c.title, description: c.description, published: c.published, lessonCount: Array.isArray(c.lessons) ? c.lessons.length : 0, duration_minutes: c.duration_minutes, level: c.level, cover_color: c.cover_color })));
-    setLoading(false);
-  }, []);
+  const refresh = useCallback(() => fetchAllRows('academy courses', (from, to) => createClient().from('courses')
+    .select('id,title,description,level,required_tier,position,duration_minutes,cover_image_url,published', { count: 'exact' })
+    .order('position').order('created_at', { ascending: false }).order('id').range(from, to))
+    .then((rows) => {
+      setCourses(rows)
+      setStatus('')
+    }).catch(() => {
+      setStatus('No se pudieron cargar los cursos.')
+    }), [])
 
-  useEffect(() => { void refresh(); }, [refresh]);
+  useEffect(() => { void refresh() }, [refresh])
 
-  async function addCourse(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!supabase || !title.trim()) return;
-    setError("");
-    const { error: insertError } = await supabase.from("courses").insert({ title: title.trim(), description: description.trim() || null, published: false, duration_minutes: duration ? Number(duration) : null, level, cover_color: "#2563eb" });
-    if (insertError) { setError(insertError.message); return; }
-    setTitle(""); setDescription(""); setDuration(""); await refresh();
-  }
-
-  async function togglePublished(course: Course) {
-    if (!supabase) return;
-    setError("");
-    const { error: updateError } = await supabase.from("courses").update({ published: !course.published }).eq("id", course.id);
-    if (updateError) setError(updateError.message);
-    else await refresh();
-  }
-
-  if (loading) return <p className="p-6">Cargando administración...</p>;
-  if (!authorized) return <p role="alert" className="p-6">{error}</p>;
-  return (
-    <div className="space-y-6">
-      <IndependizarAdminCourseOverview courses={courses} />
-      <section className="mx-auto max-w-5xl space-y-4 px-6 pb-8">
-        <h2 className="text-xl font-semibold">Crear curso</h2>
-        <form onSubmit={addCourse} className="grid gap-3">
-          <label className="grid gap-1">Nombre del curso
-            <input className="rounded-lg border p-3" required value={title} onChange={(e) => setTitle(e.target.value)} />
-          </label>
-          <label className="grid gap-1">Descripción
-            <textarea className="rounded-lg border p-3" value={description} onChange={(e) => setDescription(e.target.value)} />
-          </label>
-          <label className="grid gap-1">Duración estimada (minutos)
-            <input type="number" min="0" className="rounded-lg border p-3" placeholder="Por definir" value={duration} onChange={(e) => setDuration(e.target.value)} />
-          </label>
-          <label className="grid gap-1">Nivel
-            <select className="rounded-lg border p-3" value={level} onChange={(e) => setLevel(e.target.value)}><option>Básico</option><option>Intermedio</option><option>Avanzado</option></select>
-          </label>
-          <button type="submit" className="w-fit rounded-full bg-slate-900 px-5 py-3 text-white">Guardar borrador</button>
-        </form>
-        <h2 className="text-xl font-semibold">Publicación</h2>
-        <ul className="space-y-2">
-          {courses.map((course) => (
-            <li key={course.id} className="overflow-hidden rounded-2xl border bg-white shadow-sm">
-              <div className="flex flex-wrap items-center gap-4 p-4">
-                <div className="flex h-24 w-28 shrink-0 flex-col justify-end rounded-xl p-3 text-white" style={{ backgroundColor: course.cover_color || "#2563eb" }}><span className="text-xs font-semibold opacity-90">INDEPENDIZAR</span><span className="text-base font-bold leading-tight">{course.title}</span></div>
-                <div className="min-w-0 flex-1"><h3 className="font-semibold text-slate-900">{course.title}</h3><p className="mt-1 line-clamp-2 text-sm text-slate-600">{course.description}</p><div className="mt-2 flex flex-wrap gap-2 text-xs text-slate-600"><span className="rounded-full bg-slate-100 px-2 py-1">{course.level || "Nivel por definir"}</span><span className="rounded-full bg-slate-100 px-2 py-1">{course.lessonCount} lecciones</span><span className="rounded-full bg-slate-100 px-2 py-1">{course.duration_minutes != null ? `${course.duration_minutes} min` : "Duración por definir"}</span><span className="rounded-full bg-slate-100 px-2 py-1">{course.published ? "Publicado" : "Borrador"}</span></div></div>
-              <button type="button" className="rounded-full border px-4 py-2" onClick={() => void togglePublished(course)}>
-                {course.published ? "Despublicar" : "Publicar"}
-              </button>
-              </div>
-              <div className="px-4 pb-4"><IndependizarLessonEditor courseId={course.id} /></div>
-            </li>
-          ))}
-        </ul>
-        {error && <p role="alert" className="text-red-700">{error}</p>}
-      </section>
-    </div>
-  );
+  return <div className="mx-auto max-w-5xl space-y-4 px-4 sm:px-6">
+    <h1 className="text-3xl font-bold">Administrar cursos</h1>
+    {status && <p role={status.startsWith('No') ? 'alert' : 'status'}>{status}</p>}
+    <details className="rounded-xl border p-4">
+      <summary className="mb-2 cursor-pointer font-semibold">Nuevo curso</summary>
+      <CourseForm key={nextPosition(courses)} position={nextPosition(courses)} refresh={refresh} />
+    </details>
+    <IndependizarAdminCourseOverview courses={courses} renderCourse={(course) => <section className="rounded-xl border p-4">
+      <h2>
+        <button type="button" className="w-full text-left font-semibold" aria-expanded={selected === course.id}
+          aria-controls={`course-${course.id}`} onClick={() => setSelected(selected === course.id ? null : course.id)}>
+          {course.position}. {course.title} · {course.published ? 'Publicado' : 'Borrador'}
+        </button>
+      </h2>
+      {selected === course.id && <div id={`course-${course.id}`} className="mt-3 space-y-6">
+        <CourseForm course={course} position={course.position} refresh={refresh} />
+        <Curriculum courseId={course.id} />
+      </div>}
+    </section>} />
+  </div>
 }
