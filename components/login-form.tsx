@@ -24,6 +24,7 @@ import {
   InputGroupAddon,
   InputGroupButton,
 } from '@/components/ui/input-group'
+import { academyAccountPath } from '@/lib/independizar/academy'
 import { getSafeNextPath } from '@/lib/auth/safe-next-path'
 import { useAnalytics } from '@/lib/analytics/client'
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events'
@@ -31,9 +32,10 @@ import { toAuthFailureCode } from '@/lib/analytics/auth-failure-codes'
 
 interface LoginFormProps extends React.ComponentPropsWithoutRef<'div'> {
   tenantId?: string
+  isAcademy?: boolean
 }
 
-export function LoginForm({ className, tenantId, ...props }: LoginFormProps) {
+export function LoginForm({ className, tenantId, isAcademy = false, ...props }: LoginFormProps) {
   const t = useTranslations('auth.login')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -45,7 +47,7 @@ export function LoginForm({ className, tenantId, ...props }: LoginFormProps) {
   const analytics = useAnalytics()
   const searchParams = useSearchParams()
   const requestedNext = searchParams.get('next') ?? searchParams.get('redirectTo')
-  const nextPath = getSafeNextPath(requestedNext, '')
+  const nextPath = getSafeNextPath(requestedNext, isAcademy ? academyAccountPath : '')
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()

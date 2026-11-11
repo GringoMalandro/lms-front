@@ -2,8 +2,9 @@ import createIntlMiddleware from 'next-intl/middleware'
 import { type NextRequest, NextResponse } from 'next/server'
 import { updateSession } from '@/lib/supabase/proxy'
 import { accessTokenFromCookies, jwtClaims } from '@/lib/supabase/session-cookie'
+import { academyAccountPath, isAcademyHost } from '@/lib/independizar/academy'
 import { getSafeNextPath } from '@/lib/auth/safe-next-path'
-import { isProtectedPath } from '@/lib/auth/route-access'
+import { isProtectedPath, localizePath } from '@/lib/auth/route-access'
 import { cookieDomainForHost } from '@/lib/tenant/cookie-domain'
 import { guardChallengePath } from '@/lib/challenges/proxy-guard'
 import { createServerClient } from '@supabase/ssr'
@@ -430,8 +431,14 @@ export default async function proxy(request: NextRequest) {
   // Auth Guards — public routes
   if (isPublicRoute) {
     if (user && (normalizedPath.startsWith('/auth/login') || normalizedPath.startsWith('/auth/sign-up'))) {
-      const dashboardUrl = publicRedirectUrl(request, `/${locale}/dashboard/${userRole}`)
-      return NextResponse.redirect(dashboardUrl)
+      const dashboard = isAcademyHost(host)
+        ? localizePath(getSafeNextPath(request.nextUrl.searchParams.get('next'), academyAccountPath), locale)
+        : `/${locale}/dashboard/${userRole}`
+      const response = NextResponse.redirect(publicRedirectUrl(request, dashboard))
+      for (const cookie of supabaseResponse.headers.getSetCookie()) {
+        response.headers.append('set-cookie', cookie)
+      }
+      return response
     }
 
     // Copy ALL Set-Cookie headers from supabaseResponse to intlResponse.

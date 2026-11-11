@@ -96,7 +96,7 @@ export async function Navbar({ headerSettings }: NavbarProps = {}) {
                 <div className="hidden md:flex items-center space-x-8">
                     {isAcademy ? (
                         <>
-                            <Link href="/#cursos" className="text-sm font-medium text-muted-foreground hover:text-foreground">{isSpanish ? "Cursos" : "Courses"}</Link>
+                            <Link href="/academia" className="text-sm font-medium text-muted-foreground hover:text-foreground">{isSpanish ? "Cursos" : "Courses"}</Link>
                             <Link href="/pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground">{isSpanish ? "Planes" : "Pricing"}</Link>
                             <Link href="/instructor" className="text-sm font-medium text-muted-foreground hover:text-foreground">{isSpanish ? "Instructor" : "Instructor"}</Link>
                             <Link href="/faq" className="text-sm font-medium text-muted-foreground hover:text-foreground">{isSpanish ? "¿Preguntas frecuentes?" : "FAQ"}</Link>
@@ -138,7 +138,7 @@ export async function Navbar({ headerSettings }: NavbarProps = {}) {
                     {(headerSettings?.showLanguageSwitcher !== false) && <LanguageSwitcher />}
 
                     {userId ? (
-                        <Button variant="outline" render={<Link href="/dashboard/student" />}>
+                        <Button variant="outline" render={<Link href={isAcademy ? "/academia/cuenta" : "/dashboard/student"} />}>
                             {t('dashboard')}
                         </Button>
                     ) : (
@@ -146,7 +146,7 @@ export async function Navbar({ headerSettings }: NavbarProps = {}) {
                             {(headerSettings?.showLoginButton !== false) && (
                                 <Button
                                     variant="ghost"
-                                    className="hidden text-muted-foreground hover:text-foreground sm:inline-flex"
+                                    className={isAcademy ? "text-muted-foreground hover:text-foreground" : "hidden text-muted-foreground hover:text-foreground sm:inline-flex"}
                                     render={<Link href="/auth/login" />}
                                 >
                                     {t('login')}
@@ -157,7 +157,7 @@ export async function Navbar({ headerSettings }: NavbarProps = {}) {
                                     {headerSettings.ctaText}
                                 </Button>
                             ) : isAcademy ? (
-                                <Button className="font-medium" render={<Link href="/#cursos" />}>
+                                <Button className="font-medium" render={<Link href="/academia" />}>
                                     {t("courses")}
                                 </Button>
                             ) : isMainPlatform ? (

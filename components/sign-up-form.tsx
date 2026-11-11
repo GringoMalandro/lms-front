@@ -24,6 +24,7 @@ import {
   InputGroupAddon,
   InputGroupButton,
 } from '@/components/ui/input-group'
+import { academyAccountPath } from '@/lib/independizar/academy'
 import { getSafeNextPath } from '@/lib/auth/safe-next-path'
 import { joinSchoolPath } from '@/lib/auth/route-access'
 import { useAnalytics } from '@/lib/analytics/client'
@@ -56,7 +57,7 @@ export function SignUpForm({ className, tenantId, isAcademy = false, ...props }:
   const [showPassword, setShowPassword] = useState(false)
   const router = useRouter()
   const searchParams = useSearchParams()
-  const nextPath = getSafeNextPath(searchParams.get('next'), '')
+  const nextPath = getSafeNextPath(searchParams.get('next'), isAcademy ? academyAccountPath : '')
   const analytics = useAnalytics()
   // `signup_started` means "began filling the form", not "loaded the page" —
   // the page load is already a screen view, and a second event for it would
@@ -125,7 +126,7 @@ export function SignUpForm({ className, tenantId, isAcademy = false, ...props }:
       const newUserId = data.user?.id ?? data.session?.user?.id
       if (newUserId) analytics.identify(newUserId, { signup_method: 'password' })
 
-      if (data.session) {
+      if (data.session && !isAcademy) {
         // The signup token predates handle_new_user()'s app_metadata write, so
         // it lacks the tenant_id claim — refresh to get one that has it, or
         // tenant-scoped RLS fails closed and the next page 404s.
@@ -140,8 +141,6 @@ export function SignUpForm({ className, tenantId, isAcademy = false, ...props }:
         router.push('/auth/sign-up-success')
       } else if (nextPath) {
         router.push(nextPath)
-      } else if (isAcademy) {
-        router.push('/dashboard/student')
       } else if (tenantId === DEFAULT_TENANT_ID) {
         router.push('/create-school')
       } else {
