@@ -16,6 +16,7 @@ import { notFound } from 'next/navigation';
 import { locales } from '@/i18n';
 import { fontVariables } from '@/lib/themes/fonts';
 import { defaultThemeFor, resolveSchoolTheme, SCHOOL_THEME_SETTING_KEY } from '@/lib/themes/kit';
+import { academyBrand, academyDescription } from '@/lib/independizar/academy';
 import { getSeoContext, ogImageUrl, resolveFaviconIcons } from '@/lib/seo';
 import { OpenPanelComponent } from '@openpanel/nextjs';
 import { isAnalyticsEnvironmentEnabled } from '@/lib/analytics/exclusions';
@@ -29,8 +30,8 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'seo' });
-  const { baseUrl, siteName, tenant } = await getSeoContext();
-  const description = t('defaultDescription');
+  const { baseUrl, siteName, tenant, isAcademy } = await getSeoContext();
+  const description = isAcademy ? academyDescription(locale) : t('defaultDescription');
 
   // Same cached lookup the layout body uses below (unstable_cache keyed by
   // tenant.id, 60s TTL) — favicon_url rides along with the other branding
@@ -41,7 +42,8 @@ export async function generateMetadata({
 
   return {
     metadataBase: new URL(baseUrl),
-    icons: resolveFaviconIcons((faviconSetting as { value?: string } | undefined)?.value),
+    icons: isAcademy ? [{ url: academyBrand.icon, type: 'image/svg+xml' }]
+      : resolveFaviconIcons((faviconSetting as { value?: string } | undefined)?.value),
     title: {
       default: siteName,
       template: `%s | ${siteName}`,

@@ -113,7 +113,7 @@ export async function Footer({ footerSettings }: FooterProps = {}) {
                         <div>
                             <h3 className="mb-4 font-semibold text-white">{isSpanish ? "Explorar" : "Explore"}</h3>
                             <nav className="flex flex-col gap-3 text-sm text-slate-300">
-                                <Link href="/courses" className="hover:text-[#4ad4c9]">{isSpanish ? "Cursos de inglés" : "English courses"}</Link>
+                                <Link href="/academia" className="hover:text-[#4ad4c9]">{isSpanish ? "Cursos de inglés" : "English courses"}</Link>
                                 <Link href="/pricing" className="hover:text-[#4ad4c9]">{isSpanish ? "Planes" : "Plans"}</Link>
                             </nav>
                         </div>

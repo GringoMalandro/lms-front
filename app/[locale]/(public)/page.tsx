@@ -1,4 +1,4 @@
-import { isAcademyHost } from "@/lib/independizar/academy";
+import { academyDescription, isAcademyHost } from "@/lib/independizar/academy";
 import { getTranslations } from "next-intl/server";
 import { getCurrentTenantId, getCurrentTenant } from "@/lib/supabase/tenant";
 import { createClient } from "@/lib/supabase/server";
@@ -18,6 +18,14 @@ const DEFAULT_TENANT_ID = '00000000-0000-0000-0000-000000000001'
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params
+  if (isAcademyHost(new URL(await getRequestBaseUrl()).host)) {
+    return buildPageMetadata({
+      title: locale === 'en' ? 'Learn English online' : 'Aprende inglés en línea',
+      description: academyDescription(locale),
+      path: '/',
+      locale,
+    })
+  }
   const t = await getTranslations({ locale, namespace: 'seo' })
   // A school's published home page may carry SEO overrides on its Puck root (the editor
   // offers them on every page); /p/[slug] reads them the same way.

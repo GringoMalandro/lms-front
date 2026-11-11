@@ -1,3 +1,15 @@
+export const academyBrand = {
+  name: 'Independizar',
+  logo: '/independizar-logo.svg',
+  icon: '/independizar-icon.svg',
+} as const
+
+export function academyDescription(locale: string) {
+  return locale === 'en'
+    ? 'Learn English online at your own pace with Independizar.'
+    : 'Aprende inglés en línea a tu ritmo con Independizar.'
+}
+
 export const academyAccountPath = '/academia/cuenta'
 
 export function isAcademyHost(authority: string | null | undefined) {
