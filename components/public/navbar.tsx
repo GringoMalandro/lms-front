@@ -75,7 +75,7 @@ export async function Navbar({ headerSettings }: NavbarProps = {}) {
                         {logoUrl ? (
                             <img src={logoUrl} alt={brandName} className="w-8 h-8 rounded-lg object-cover" />
                         ) : isMainPlatform ? (
-                            <img src={platformLogo} alt={isAcademy ? "Independizar" : brandName} className={isAcademy ? "h-9 w-auto max-w-44" : "w-8 h-8"} />
+                            <img src={platformLogo} alt={isAcademy ? "Independizar" : brandName} className={isAcademy ? "h-9 w-auto max-w-36 sm:max-w-44 drop-shadow-[0_0_7px_rgba(255,255,255,0.85)]" : "w-8 h-8"} />
                         ) : (
                             // The school's theme colour, via the tokens the layout resolved (#763).
                             <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-primary">
@@ -134,8 +134,8 @@ export async function Navbar({ headerSettings }: NavbarProps = {}) {
                 </div>
 
                 {/* Right Actions */}
-                <div className="flex items-center space-x-4">
-                    {(headerSettings?.showLanguageSwitcher !== false) && <LanguageSwitcher />}
+                <div className="flex items-center gap-2 sm:gap-4">
+                    <div className="hidden sm:block">{(headerSettings?.showLanguageSwitcher !== false) && <LanguageSwitcher />}</div>
 
                     {userId ? (
                         <Button variant="outline" render={<Link href="/dashboard/student" />}>
@@ -157,7 +157,7 @@ export async function Navbar({ headerSettings }: NavbarProps = {}) {
                                     {headerSettings.ctaText}
                                 </Button>
                             ) : isAcademy ? (
-                                <Button className="font-medium" render={<Link href="/#cursos" />}>
+                                <Button className="hidden font-medium sm:inline-flex" render={<Link href="/#cursos" />}>
                                     {t("courses")}
                                 </Button>
                             ) : isMainPlatform ? (
@@ -172,6 +172,42 @@ export async function Navbar({ headerSettings }: NavbarProps = {}) {
                         </>
                     )}
                 </div>
+                {/* Native mobile navigation: no JavaScript required, keyboard accessible. */}
+                <details className="group relative md:hidden">
+                    <summary aria-label={isSpanish ? "Abrir menú" : "Open menu"} className="flex h-11 w-11 cursor-pointer list-none items-center justify-center rounded-md border border-border text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring [&::-webkit-details-marker]:hidden">
+                        <span aria-hidden="true" className="text-2xl leading-none">☰</span>
+                    </summary>
+                    <div className="absolute right-0 top-full z-50 mt-2 flex w-[min(19rem,calc(100vw-2rem))] flex-col gap-1 rounded-xl border border-border bg-background p-3 text-foreground shadow-xl">
+                        {(isAcademy ? [
+                            { href: "/#cursos", label: isSpanish ? "Cursos" : "Courses" },
+                            { href: "/pricing", label: isSpanish ? "Planes" : "Pricing" },
+                            { href: "/instructor", label: "Instructor" },
+                            { href: "/faq", label: isSpanish ? "Preguntas frecuentes" : "FAQ" },
+                        ] : isMainPlatform ? [
+                            { href: "/#features", label: t("features") },
+                            { href: "/platform-pricing", label: t("pricing") },
+                            { href: "/creators", label: t("creators") },
+                        ] : headerSettings?.navLinks?.length ? headerSettings.navLinks : [
+                            { href: "/courses", label: t("courses") },
+                            { href: "/about", label: t("about") },
+                        ]).map((link) => (
+                            <Link key={link.href} href={link.href} className="rounded-lg px-3 py-3 text-sm font-medium hover:bg-accent focus-visible:outline-2 focus-visible:outline-ring">{link.label}</Link>
+                        ))}
+                        <div className="border-t border-border pt-2">
+                            {userId ? (
+                                <Link href="/dashboard/student" className="block rounded-lg px-3 py-3 text-sm font-semibold hover:bg-accent">{t("dashboard")}</Link>
+                            ) : (
+                                <>
+                                    <Link href="/auth/login" className="block rounded-lg px-3 py-3 text-sm font-semibold hover:bg-accent">{t("login")}</Link>
+                                    <Link href={isAcademy ? "/#cursos" : isMainPlatform ? "/create-school" : "/auth/sign-up?next=/join-school"} className="block rounded-lg bg-primary px-3 py-3 text-center text-sm font-semibold text-primary-foreground">
+                                        {isAcademy ? t("courses") : isMainPlatform ? t("startFree") : t("join")}
+                                    </Link>
+                                </>
+                            )}
+                            <div className="mt-2 px-3 sm:hidden">{(headerSettings?.showLanguageSwitcher !== false) && <LanguageSwitcher />}</div>
+                        </div>
+                    </div>
+                </details>
             </div>
         </nav>
     );
