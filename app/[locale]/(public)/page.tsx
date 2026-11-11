@@ -1,3 +1,4 @@
+import { isAcademyHost } from "@/lib/independizar/academy";
 import { getTranslations } from "next-intl/server";
 import { getCurrentTenantId, getCurrentTenant } from "@/lib/supabase/tenant";
 import { createClient } from "@/lib/supabase/server";
@@ -46,7 +47,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function LandingPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const baseUrl = await getRequestBaseUrl();
-  if (new URL(baseUrl).hostname.replace(/^www\\./, "") === "independizar.com") {
+  if (isAcademyHost(new URL(baseUrl).host)) {
     return <AcademyLanding locale={locale} />;
   }
   // Branch to school landing page on subdomains

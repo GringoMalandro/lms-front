@@ -1,3 +1,4 @@
+import { isAcademyHost } from "@/lib/independizar/academy";
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -12,7 +13,7 @@ export default async function IndependizarAdminPage({
 }) {
   const { locale } = await params;
   const host = (await headers()).get("host")?.split(":")[0]?.toLowerCase();
-  if (host !== "independizar.com" && host !== "www.independizar.com") notFound();
+  if (!isAcademyHost(host)) notFound();
 
   const supabase = await createClient();
   const { data: { user }, error } = await supabase.auth.getUser();

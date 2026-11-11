@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getLessonVideoLink } from "@/lib/independizar/academy";
+import { getLessonVideoLink, isAcademyHost } from "@/lib/independizar/academy";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 export default async function AcademiaPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const host = (await headers()).get("host")?.split(":")[0]?.toLowerCase();
-  if (host !== "independizar.com" && host !== "www.independizar.com") notFound();
+  if (!isAcademyHost(host)) notFound();
   const supabase = await createClient();
   const { data: courses, error } = await supabase.from("courses")
     .select("id,title,description,level,duration_minutes,cover_color,cover_image_url")

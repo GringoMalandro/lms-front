@@ -1,3 +1,4 @@
+import { isAcademyHost } from "@/lib/independizar/academy";
 import { SignUpForm } from '@/components/sign-up-form'
 import { getCurrentTenantId } from '@/lib/supabase/tenant'
 import type { Metadata } from 'next'
@@ -11,7 +12,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 }
 
 export default async function Page() {
-  const isAcademy = new URL(await getRequestBaseUrl()).hostname.replace(/^www\./, '') === 'independizar.com'
+  const isAcademy = isAcademyHost(new URL(await getRequestBaseUrl()).host)
   const tenantId = isAcademy ? undefined : await getCurrentTenantId()
 
   return (
