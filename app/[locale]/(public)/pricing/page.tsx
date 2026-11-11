@@ -2,7 +2,7 @@ import { isAcademyHost } from "@/lib/independizar/academy";
 import { createClient } from "@/lib/supabase/server";
 import { getRequestBaseUrl } from "@/lib/seo";
 import { getLocale } from "next-intl/server";
-import { AcademyPricing } from "@/components/public/academy-pricing";
+import { redirect } from "next/navigation";
 import { getCurrentTenantId } from "@/lib/supabase/tenant";
 import { HelpCircle, PackageSearch, ArrowRight } from "lucide-react";
 import { PROVIDER_CAPABILITIES, type PaymentProvider } from "@/lib/payments/types";
@@ -27,7 +27,7 @@ export default async function PricingPage({
     searchParams: Promise<{ subscribe?: string }>;
 }) {
     const isAcademy = isAcademyHost(new URL(await getRequestBaseUrl()).host);
-    if (isAcademy) return <AcademyPricing locale={await getLocale()} />;
+    if (isAcademy) redirect(`/${await getLocale()}/suscripciones`);
     const supabase = await createClient();
     const tenantId = await getCurrentTenantId();
     const t = await getTranslations('pricing');
