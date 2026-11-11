@@ -1,11 +1,28 @@
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { getLessonVideoLink, isAcademyHost, isAcademyId, summarizeLessons } from '@/lib/independizar/academy'
+
+afterEach(() => vi.unstubAllEnvs())
 
 describe('academy routing and lesson links', () => {
   it('recognizes both Independizar hosts and rejects lookalikes', () => {
     expect(isAcademyHost('Independizar.com:3000')).toBe(true)
     expect(isAcademyHost('www.independizar.com')).toBe(true)
     expect(isAcademyHost('independizar.com.example.com')).toBe(false)
+  })
+
+  it('recognizes only the Vercel-provided hosts on an Independizar preview branch', () => {
+    vi.stubEnv('VERCEL_ENV', 'preview')
+    vi.stubEnv('VERCEL_GIT_COMMIT_REF', 'development/course-management')
+    vi.stubEnv('VERCEL_URL', 'academy-preview.vercel.app')
+    vi.stubEnv('VERCEL_BRANCH_URL', 'academy-branch.vercel.app')
+    expect(isAcademyHost('academy-preview.vercel.app')).toBe(true)
+    expect(isAcademyHost('academy-branch.vercel.app')).toBe(true)
+    expect(isAcademyHost('other-preview.vercel.app')).toBe(false)
+    vi.stubEnv('VERCEL_GIT_COMMIT_REF', 'unrelated-branch')
+    expect(isAcademyHost('academy-preview.vercel.app')).toBe(false)
+    vi.stubEnv('VERCEL_GIT_COMMIT_REF', 'development/student-learning')
+    vi.stubEnv('VERCEL_ENV', 'production')
+    expect(isAcademyHost('academy-preview.vercel.app')).toBe(false)
   })
 
   it('validates course IDs before querying Supabase', () => {

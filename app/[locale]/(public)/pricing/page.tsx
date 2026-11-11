@@ -1,3 +1,4 @@
+import { isAcademyHost } from "@/lib/independizar/academy";
 import { createClient } from "@/lib/supabase/server";
 import { getRequestBaseUrl } from "@/lib/seo";
 import { getLocale } from "next-intl/server";
@@ -25,7 +26,7 @@ export default async function PricingPage({
 }: {
     searchParams: Promise<{ subscribe?: string }>;
 }) {
-    const isAcademy = new URL(await getRequestBaseUrl()).hostname.replace(/^www\./, "") === "independizar.com";
+    const isAcademy = isAcademyHost(new URL(await getRequestBaseUrl()).host);
     if (isAcademy) return <AcademyPricing locale={await getLocale()} />;
     const supabase = await createClient();
     const tenantId = await getCurrentTenantId();

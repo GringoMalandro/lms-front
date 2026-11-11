@@ -1,3 +1,4 @@
+import { isAcademyHost } from "@/lib/independizar/academy";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
@@ -25,7 +26,7 @@ export async function Navbar({ headerSettings }: NavbarProps = {}) {
     const tenant = await getCurrentTenant();
 
     const isMainPlatform = !tenant || tenant.id === DEFAULT_TENANT_ID
-    const isAcademy = new URL(await getRequestBaseUrl()).hostname.replace(/^www\./, "") === "independizar.com"
+    const isAcademy = isAcademyHost(new URL(await getRequestBaseUrl()).host)
 
     // Load branding overrides from tenant_settings. `setting_value` is jsonb, so
     // the stored shape is only a claim until it is read — anything that is not a

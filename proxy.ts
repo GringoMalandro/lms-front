@@ -104,7 +104,7 @@ function getTenantSlugFromHost(host: string): string | null {
  */
 function getCustomDomainFromHost(host: string): string | null {
   const hostname = host.split(':')[0].toLowerCase()
-  if (!hostname || PLATFORM_HOSTS.includes(hostname)) return null
+  if (!hostname || PLATFORM_HOSTS.includes(hostname) || isAcademyHost(hostname)) return null
   if (hostname.endsWith(`.${PLATFORM_DOMAIN}`)) return null
   // Local dev hosts (lvh.me, *.localhost) are never custom domains.
   if (hostname === 'lvh.me' || hostname.endsWith('.lvh.me') || hostname.endsWith('.localhost')) return null

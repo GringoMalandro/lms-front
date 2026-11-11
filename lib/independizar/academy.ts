@@ -2,7 +2,13 @@ export const academyAccountPath = '/academia/cuenta'
 
 export function isAcademyHost(authority: string | null | undefined) {
   const host = authority?.split(':')[0].toLowerCase()
-  return host === 'independizar.com' || host === 'www.independizar.com'
+  if (host === 'independizar.com' || host === 'www.independizar.com') return true
+
+  const branch = process.env.VERCEL_GIT_COMMIT_REF
+  return Boolean(host)
+    && process.env.VERCEL_ENV === 'preview'
+    && (branch === 'development/student-learning' || branch === 'development/course-management')
+    && (host === process.env.VERCEL_URL || host === process.env.VERCEL_BRANCH_URL)
 }
 
 export function isAcademyId(value: unknown): value is string {
