@@ -1,4 +1,4 @@
-import { isAcademyHost } from "@/lib/independizar/academy";
+import { academyAccountPath, isAcademyHost } from "@/lib/independizar/academy";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
@@ -139,8 +139,8 @@ export async function Navbar({ headerSettings }: NavbarProps = {}) {
                     {(headerSettings?.showLanguageSwitcher !== false) && <LanguageSwitcher />}
 
                     {userId ? (
-                        <Button variant="outline" render={<Link href={isAcademy ? "/academia/cuenta" : "/dashboard/student"} />}>
-                            {t('dashboard')}
+                        <Button variant="outline" render={<Link href={isAcademy ? academyAccountPath : "/dashboard/student"} />}>
+                            {isAcademy ? (isSpanish ? 'Mi cuenta' : 'My account') : t('dashboard')}
                         </Button>
                     ) : (
                         <>

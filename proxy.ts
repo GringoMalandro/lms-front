@@ -381,7 +381,19 @@ export default async function proxy(request: NextRequest) {
   const cleanPath = hasValidLocale
     ? `/${segments.slice(2).join('/')}`
     : pathname
-  const normalizedPath = cleanPath === '' ? '/' : cleanPath
+  const normalizedPath = cleanPath.replace(/\/+$/, '') || '/'
+
+  if (isAcademyHost(host)) {
+    if (normalizedPath === '/dashboard' || normalizedPath === '/dashboard/student') {
+      return NextResponse.redirect(publicRedirectUrl(request, `/${locale}${academyAccountPath}`), 303)
+    }
+    if (normalizedPath === '/create-school' || normalizedPath === '/join-school' || normalizedPath === '/creators') {
+      return NextResponse.redirect(publicRedirectUrl(request, `/${locale}/academia`), 303)
+    }
+    if (normalizedPath === '/platform-pricing') {
+      return NextResponse.redirect(publicRedirectUrl(request, `/${locale}/pricing`), 303)
+    }
+  }
 
   // Which paths need a session.
   //

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { isFreePreviewEnabled } from '@/lib/settings/free-preview'
+import { isAcademyHost } from '@/lib/independizar/academy'
 import { withSlug } from '@/lib/slug'
 
 export const dynamic = 'force-dynamic'
@@ -79,7 +80,7 @@ export async function GET(request: NextRequest) {
   }
 
   const paths = [
-    ...STATIC_PATHS,
+    ...(isAcademyHost(host) ? STATIC_PATHS.filter(path => !['/creators', '/platform-pricing', '/create-school'].includes(path)) : STATIC_PATHS),
     ...(courses ?? []).map((c) => `/courses/${withSlug(c.course_id, c.title)}`),
     ...previewLessonPaths,
   ]
