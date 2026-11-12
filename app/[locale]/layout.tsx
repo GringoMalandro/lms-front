@@ -16,8 +16,8 @@ import { notFound } from 'next/navigation';
 import { locales } from '@/i18n';
 import { fontVariables } from '@/lib/themes/fonts';
 import { defaultThemeFor, resolveSchoolTheme, SCHOOL_THEME_SETTING_KEY } from '@/lib/themes/kit';
-import { academyBrand, academyDescription } from '@/lib/independizar/academy';
-import { getSeoContext, ogImageUrl, resolveFaviconIcons } from '@/lib/seo';
+import { academyBrand, academyDescription, isAcademyHost } from '@/lib/independizar/academy';
+import { getRequestBaseUrl, getSeoContext, ogImageUrl, resolveFaviconIcons } from '@/lib/seo';
 import { OpenPanelComponent } from '@openpanel/nextjs';
 import { isAnalyticsEnvironmentEnabled } from '@/lib/analytics/exclusions';
 import { getSessionReplayConfig } from '@/lib/analytics/replay';
@@ -123,6 +123,7 @@ export default async function RootLayout({
   // Enable static rendering
   setRequestLocale(locale);
 
+  const isAcademy = isAcademyHost(new URL(await getRequestBaseUrl()).host);
   const messages = await getMessages();
   const tenant = await getCurrentTenant();
 
@@ -216,7 +217,7 @@ export default async function RootLayout({
               <RouteProgress />
               <AnalyticsUserBinder />
               {children}
-              <FeedbackButton />
+              {!isAcademy && <FeedbackButton />}
               <Toaster />
             </TenantProvider>
           </ThemeProvider>

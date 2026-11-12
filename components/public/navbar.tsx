@@ -49,7 +49,7 @@ export async function Navbar({ headerSettings }: NavbarProps = {}) {
 
     // Get user's tenants for the switcher
     let userTenants: TenantOption[] = [];
-    if (userId) {
+    if (userId && !isAcademy) {
         const { data } = await supabase
             .from('tenant_users')
             .select('role, tenant:tenants(id, slug, name)')
@@ -88,7 +88,7 @@ export async function Navbar({ headerSettings }: NavbarProps = {}) {
                         </span>
                     </Link>
 
-                    {userTenants.length > 1 && (
+                    {!isAcademy && userTenants.length > 1 && (
                         <NavbarTenantSwitcher tenants={userTenants} />
                     )}
                 </div>
@@ -153,13 +153,13 @@ export async function Navbar({ headerSettings }: NavbarProps = {}) {
                                     {t('login')}
                                 </Button>
                             )}
-                            {headerSettings?.ctaText && headerSettings?.ctaLink ? (
-                                <Button className="font-medium" render={<Link href={headerSettings.ctaLink} />}>
-                                    {headerSettings.ctaText}
-                                </Button>
-                            ) : isAcademy ? (
+                            {isAcademy ? (
                                 <Button className="font-medium" render={<Link href="/academia" />}>
                                     {t("courses")}
+                                </Button>
+                            ) : headerSettings?.ctaText && headerSettings?.ctaLink ? (
+                                <Button className="font-medium" render={<Link href={headerSettings.ctaLink} />}>
+                                    {headerSettings.ctaText}
                                 </Button>
                             ) : isMainPlatform ? (
                                 <Button className="font-medium" render={<Link href="/create-school" />}>
