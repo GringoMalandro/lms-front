@@ -2,6 +2,7 @@ import { headers } from 'next/headers'
 import type { Metadata } from 'next'
 import { getCurrentTenant, type Tenant } from '@/lib/supabase/tenant'
 import { normalizeLogoUrl } from '@/lib/themes/brand-outputs'
+import { academyBrand, isAcademyHost } from '@/lib/independizar/academy'
 import { APP_NAME } from '@/lib/app-name'
 
 const FALLBACK_SITE_NAME = APP_NAME
@@ -48,13 +49,17 @@ export interface SeoContext {
   baseUrl: string
   siteName: string
   tenant: Tenant | null
+  isAcademy: boolean
 }
 
 export async function getSeoContext(): Promise<SeoContext> {
-  const [baseUrl, tenant] = await Promise.all([getRequestBaseUrl(), getCurrentTenant()])
+  const baseUrl = await getRequestBaseUrl()
+  const isAcademy = isAcademyHost(new URL(baseUrl).host)
+  const tenant = isAcademy ? null : await getCurrentTenant()
   return {
+    isAcademy,
     baseUrl,
-    siteName: tenant?.name || FALLBACK_SITE_NAME,
+    siteName: isAcademy ? academyBrand.name : tenant?.name || FALLBACK_SITE_NAME,
     tenant,
   }
 }

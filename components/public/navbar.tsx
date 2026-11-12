@@ -1,3 +1,4 @@
+import { academyAccountPath, isAcademyHost } from "@/lib/independizar/academy";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
@@ -25,7 +26,7 @@ export async function Navbar({ headerSettings }: NavbarProps = {}) {
     const tenant = await getCurrentTenant();
 
     const isMainPlatform = !tenant || tenant.id === DEFAULT_TENANT_ID
-    const isAcademy = new URL(await getRequestBaseUrl()).hostname.replace(/^www\./, "") === "independizar.com"
+    const isAcademy = isAcademyHost(new URL(await getRequestBaseUrl()).host)
 
     // Load branding overrides from tenant_settings. `setting_value` is jsonb, so
     // the stored shape is only a claim until it is read — anything that is not a
@@ -48,7 +49,7 @@ export async function Navbar({ headerSettings }: NavbarProps = {}) {
 
     // Get user's tenants for the switcher
     let userTenants: TenantOption[] = [];
-    if (userId) {
+    if (userId && !isAcademy) {
         const { data } = await supabase
             .from('tenant_users')
             .select('role, tenant:tenants(id, slug, name)')
@@ -87,7 +88,7 @@ export async function Navbar({ headerSettings }: NavbarProps = {}) {
                         </span>
                     </Link>
 
-                    {userTenants.length > 1 && (
+                    {!isAcademy && userTenants.length > 1 && (
                         <NavbarTenantSwitcher tenants={userTenants} />
                     )}
                 </div>
@@ -96,7 +97,7 @@ export async function Navbar({ headerSettings }: NavbarProps = {}) {
                 <div className="hidden md:flex items-center space-x-8">
                     {isAcademy ? (
                         <>
-                            <Link href="/#cursos" className="text-sm font-medium text-muted-foreground hover:text-foreground">{isSpanish ? "Cursos" : "Courses"}</Link>
+                            <Link href="/academia" className="text-sm font-medium text-muted-foreground hover:text-foreground">{isSpanish ? "Cursos" : "Courses"}</Link>
                             <Link href="/pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground">{isSpanish ? "Planes" : "Pricing"}</Link>
                             <Link href="/instructor" className="text-sm font-medium text-muted-foreground hover:text-foreground">{isSpanish ? "Instructor" : "Instructor"}</Link>
                             <Link href="/faq" className="text-sm font-medium text-muted-foreground hover:text-foreground">{isSpanish ? "¿Preguntas frecuentes?" : "FAQ"}</Link>
@@ -138,27 +139,27 @@ export async function Navbar({ headerSettings }: NavbarProps = {}) {
                     {(headerSettings?.showLanguageSwitcher !== false) && <LanguageSwitcher />}
 
                     {userId ? (
-                        <Button variant="outline" render={<Link href="/dashboard/student" />}>
-                            {t('dashboard')}
+                        <Button variant="outline" render={<Link href={isAcademy ? academyAccountPath : "/dashboard/student"} />}>
+                            {isAcademy ? (isSpanish ? 'Mi cuenta' : 'My account') : t('dashboard')}
                         </Button>
                     ) : (
                         <>
                             {(headerSettings?.showLoginButton !== false) && (
                                 <Button
                                     variant="ghost"
-                                    className="hidden text-muted-foreground hover:text-foreground sm:inline-flex"
+                                    className={isAcademy ? "text-muted-foreground hover:text-foreground" : "hidden text-muted-foreground hover:text-foreground sm:inline-flex"}
                                     render={<Link href="/auth/login" />}
                                 >
                                     {t('login')}
                                 </Button>
                             )}
-                            {headerSettings?.ctaText && headerSettings?.ctaLink ? (
+                            {isAcademy ? (
+                                <Button className="font-medium" render={<Link href="/academia" />}>
+                                    {t("courses")}
+                                </Button>
+                            ) : headerSettings?.ctaText && headerSettings?.ctaLink ? (
                                 <Button className="font-medium" render={<Link href={headerSettings.ctaLink} />}>
                                     {headerSettings.ctaText}
-                                </Button>
-                            ) : isAcademy ? (
-                                <Button className="font-medium" render={<Link href="/#cursos" />}>
-                                    {t("courses")}
                                 </Button>
                             ) : isMainPlatform ? (
                                 <Button className="font-medium" render={<Link href="/create-school" />}>

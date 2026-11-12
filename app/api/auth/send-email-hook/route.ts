@@ -9,6 +9,7 @@ import { buildAuthEmailLink } from '@/lib/auth/send-email-hook/build-link'
 import { resolveTenantIdForAuthEmail } from '@/lib/auth/send-email-hook/resolve-tenant'
 import { getSchoolBrand, platformSchoolBrand } from '@/lib/themes/school-brand'
 import { authOtpTemplate, authReauthenticationTemplate, type AuthOtpKind } from '@/lib/email/templates/auth-otp'
+import { academyBrand, isAcademyHost } from '@/lib/independizar/academy'
 import { sendEmail } from '@/lib/email/send'
 
 /**
@@ -68,12 +69,15 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const tenantId = await resolveTenantIdForAuthEmail({
+    const emailOrigin = URL.parse(emailData.redirect_to || emailData.site_url)
+    const isAcademy = isAcademyHost(emailOrigin?.host)
+    const tenantId = isAcademy ? null : await resolveTenantIdForAuthEmail({
       redirectTo: emailData.redirect_to || null,
       userId: user.id,
       userMetadata: user.user_metadata ?? null,
     })
-    const brand = tenantId ? await getSchoolBrand(tenantId) : platformSchoolBrand('')
+    const brand = isAcademy ? platformSchoolBrand('', academyBrand.name)
+      : tenantId ? await getSchoolBrand(tenantId) : platformSchoolBrand('')
     const schoolName = brand.name || 'LMS Platform'
 
     if (actionType === 'reauthentication') {

@@ -16,7 +16,8 @@ import { notFound } from 'next/navigation';
 import { locales } from '@/i18n';
 import { fontVariables } from '@/lib/themes/fonts';
 import { defaultThemeFor, resolveSchoolTheme, SCHOOL_THEME_SETTING_KEY } from '@/lib/themes/kit';
-import { getSeoContext, ogImageUrl, resolveFaviconIcons } from '@/lib/seo';
+import { academyBrand, academyDescription, isAcademyHost } from '@/lib/independizar/academy';
+import { getRequestBaseUrl, getSeoContext, ogImageUrl, resolveFaviconIcons } from '@/lib/seo';
 import { OpenPanelComponent } from '@openpanel/nextjs';
 import { isAnalyticsEnvironmentEnabled } from '@/lib/analytics/exclusions';
 import { getSessionReplayConfig } from '@/lib/analytics/replay';
@@ -29,8 +30,8 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'seo' });
-  const { baseUrl, siteName, tenant } = await getSeoContext();
-  const description = t('defaultDescription');
+  const { baseUrl, siteName, tenant, isAcademy } = await getSeoContext();
+  const description = isAcademy ? academyDescription(locale) : t('defaultDescription');
 
   // Same cached lookup the layout body uses below (unstable_cache keyed by
   // tenant.id, 60s TTL) — favicon_url rides along with the other branding
@@ -41,7 +42,8 @@ export async function generateMetadata({
 
   return {
     metadataBase: new URL(baseUrl),
-    icons: resolveFaviconIcons((faviconSetting as { value?: string } | undefined)?.value),
+    icons: isAcademy ? [{ url: academyBrand.icon, type: 'image/svg+xml' }]
+      : resolveFaviconIcons((faviconSetting as { value?: string } | undefined)?.value),
     title: {
       default: siteName,
       template: `%s | ${siteName}`,
@@ -121,6 +123,7 @@ export default async function RootLayout({
   // Enable static rendering
   setRequestLocale(locale);
 
+  const isAcademy = isAcademyHost(new URL(await getRequestBaseUrl()).host);
   const messages = await getMessages();
   const tenant = await getCurrentTenant();
 
@@ -214,7 +217,7 @@ export default async function RootLayout({
               <RouteProgress />
               <AnalyticsUserBinder />
               {children}
-              <FeedbackButton />
+              {!isAcademy && <FeedbackButton />}
               <Toaster />
             </TenantProvider>
           </ThemeProvider>

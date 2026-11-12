@@ -1,11 +1,15 @@
 import { getCurrentTenant } from '@/lib/supabase/tenant'
 import { getTranslations } from 'next-intl/server'
 import { APP_NAME } from '@/lib/app-name'
+import { isAcademyHost } from '@/lib/independizar/academy'
+import { getRequestBaseUrl } from '@/lib/seo'
 import { hasPlanFeature } from '@/lib/plans/server'
 
 const DEFAULT_TENANT_ID = '00000000-0000-0000-0000-000000000001'
 
 export async function PoweredByBanner() {
+  if (isAcademyHost(new URL(await getRequestBaseUrl()).host)) return null
+
   const tenant = await getCurrentTenant()
   const t = await getTranslations('landingPageBuilder.poweredBy')
 

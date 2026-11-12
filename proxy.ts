@@ -2,8 +2,9 @@ import createIntlMiddleware from 'next-intl/middleware'
 import { type NextRequest, NextResponse } from 'next/server'
 import { updateSession } from '@/lib/supabase/proxy'
 import { accessTokenFromCookies, jwtClaims } from '@/lib/supabase/session-cookie'
+import { academyAccountPath, isAcademyHost } from '@/lib/independizar/academy'
 import { getSafeNextPath } from '@/lib/auth/safe-next-path'
-import { isProtectedPath } from '@/lib/auth/route-access'
+import { isProtectedPath, localizePath } from '@/lib/auth/route-access'
 import { cookieDomainForHost } from '@/lib/tenant/cookie-domain'
 import { guardChallengePath } from '@/lib/challenges/proxy-guard'
 import { createServerClient } from '@supabase/ssr'
@@ -103,7 +104,7 @@ function getTenantSlugFromHost(host: string): string | null {
  */
 function getCustomDomainFromHost(host: string): string | null {
   const hostname = host.split(':')[0].toLowerCase()
-  if (!hostname || PLATFORM_HOSTS.includes(hostname)) return null
+  if (!hostname || PLATFORM_HOSTS.includes(hostname) || isAcademyHost(hostname)) return null
   if (hostname.endsWith(`.${PLATFORM_DOMAIN}`)) return null
   // Local dev hosts (lvh.me, *.localhost) are never custom domains.
   if (hostname === 'lvh.me' || hostname.endsWith('.lvh.me') || hostname.endsWith('.localhost')) return null
@@ -380,7 +381,19 @@ export default async function proxy(request: NextRequest) {
   const cleanPath = hasValidLocale
     ? `/${segments.slice(2).join('/')}`
     : pathname
-  const normalizedPath = cleanPath === '' ? '/' : cleanPath
+  const normalizedPath = cleanPath.replace(/\/+$/, '') || '/'
+
+  if (isAcademyHost(host)) {
+    if (normalizedPath === '/dashboard' || normalizedPath === '/dashboard/student') {
+      return NextResponse.redirect(publicRedirectUrl(request, `/${locale}${academyAccountPath}`), 303)
+    }
+    if (normalizedPath === '/create-school' || normalizedPath === '/join-school' || normalizedPath === '/creators') {
+      return NextResponse.redirect(publicRedirectUrl(request, `/${locale}/academia`), 303)
+    }
+    if (normalizedPath === '/platform-pricing') {
+      return NextResponse.redirect(publicRedirectUrl(request, `/${locale}/pricing`), 303)
+    }
+  }
 
   // Which paths need a session.
   //
@@ -430,8 +443,14 @@ export default async function proxy(request: NextRequest) {
   // Auth Guards — public routes
   if (isPublicRoute) {
     if (user && (normalizedPath.startsWith('/auth/login') || normalizedPath.startsWith('/auth/sign-up'))) {
-      const dashboardUrl = publicRedirectUrl(request, `/${locale}/dashboard/${userRole}`)
-      return NextResponse.redirect(dashboardUrl)
+      const dashboard = isAcademyHost(host)
+        ? localizePath(getSafeNextPath(request.nextUrl.searchParams.get('next'), academyAccountPath), locale)
+        : `/${locale}/dashboard/${userRole}`
+      const response = NextResponse.redirect(publicRedirectUrl(request, dashboard))
+      for (const cookie of supabaseResponse.headers.getSetCookie()) {
+        response.headers.append('set-cookie', cookie)
+      }
+      return response
     }
 
     // Copy ALL Set-Cookie headers from supabaseResponse to intlResponse.

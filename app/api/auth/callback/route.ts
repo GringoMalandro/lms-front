@@ -1,3 +1,4 @@
+import { academyAccountPath, isAcademyHost } from '@/lib/independizar/academy'
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentTenantId } from '@/lib/supabase/tenant'
@@ -26,13 +27,16 @@ export async function GET(request: Request) {
   const proto = request.headers.get('x-forwarded-proto') ?? url.protocol.replace(':', '')
   const origin = `${proto}://${host}`
   const code = searchParams.get('code')
-  const next = getSafeNextPath(searchParams.get('next'), '/dashboard/student')
+  const isAcademy = isAcademyHost(host)
+  const next = getSafeNextPath(searchParams.get('next'), isAcademy ? academyAccountPath : '/dashboard/student')
 
   if (code) {
     const supabase = await createClient()
     const { error } = await supabase.auth.exchangeCodeForSession(code)
 
     if (!error) {
+      if (isAcademy) return NextResponse.redirect(`${origin}${next}`)
+
       // Get session from cookie (no network call) — exchangeCodeForSession already
       // validated the token and established the session above.
       const { data: { session } } = await supabase.auth.getSession()

@@ -1,3 +1,4 @@
+import { isAcademyHost } from "@/lib/independizar/academy";
 import Link from "next/link";
 import { getCurrentTenant } from "@/lib/supabase/tenant";
 import { getLocale, getTranslations } from 'next-intl/server';
@@ -30,7 +31,7 @@ export async function Footer({ footerSettings }: FooterProps = {}) {
     // Real product name (#730) when there's no tenant to brand this footer with
     // (the platform's own marketing pages).
     const platformName = APP_NAME;
-    const isAcademy = new URL(await getRequestBaseUrl()).hostname.replace(/^www\./, "") === "independizar.com";
+    const isAcademy = isAcademyHost(new URL(await getRequestBaseUrl()).host);
     const brandName = isAcademy ? "Independizar" : tenant && tenant.id !== DEFAULT_TENANT_ID ? tenant.name : platformName;
     const slogan = isAcademy ? (isSpanish ? "Aprende. Crece. Sé libre." : "Learn. Grow. Be free.") : null;
     const academyCopyright = isAcademy ? `© ${new Date().getFullYear()} Independizar. ${slogan} ${isSpanish ? "Un proyecto de Tren del Agua Inc. Todos los derechos reservados." : "A project of Tren del Agua Inc. All rights reserved."}` : null;
@@ -112,7 +113,7 @@ export async function Footer({ footerSettings }: FooterProps = {}) {
                         <div>
                             <h3 className="mb-4 font-semibold text-white">{isSpanish ? "Explorar" : "Explore"}</h3>
                             <nav className="flex flex-col gap-3 text-sm text-slate-300">
-                                <Link href="/courses" className="hover:text-[#4ad4c9]">{isSpanish ? "Cursos de inglés" : "English courses"}</Link>
+                                <Link href="/academia" className="hover:text-[#4ad4c9]">{isSpanish ? "Cursos de inglés" : "English courses"}</Link>
                                 <Link href="/pricing" className="hover:text-[#4ad4c9]">{isSpanish ? "Planes" : "Plans"}</Link>
                             </nav>
                         </div>

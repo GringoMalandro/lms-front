@@ -16,7 +16,7 @@ export function AcademyLanding({ locale }: { locale: string }) {
           <h1 className="mt-7 text-5xl font-extrabold leading-tight tracking-tight md:text-6xl">{es ? "Aprende inglés. Abre nuevas puertas." : "Learn English. Open new doors."}</h1>
           <p className="mt-6 max-w-xl text-lg leading-relaxed text-slate-600">{es ? "Cursos en español para aprender inglés a tu ritmo. Próximamente, también inteligencia artificial y nuevas habilidades." : "Courses designed to help you learn English at your own pace. AI and new skills are coming next."}</p>
           <div className="mt-9 flex flex-wrap gap-3">
-            <Link href="#cursos" className="inline-flex items-center gap-2 rounded-xl bg-[#008f89] px-6 py-4 font-semibold text-white hover:bg-[#006c68]">{es ? "Explorar cursos" : "Explore courses"}<ArrowRight size={18}/></Link>
+            <Link href="/academia" className="inline-flex items-center gap-2 rounded-xl bg-[#008f89] px-6 py-4 font-semibold text-white hover:bg-[#006c68]">{es ? "Explorar cursos" : "Explore courses"}<ArrowRight size={18}/></Link>
             <Link href="/auth/login" className="rounded-xl border border-[#008f89] px-6 py-4 font-semibold text-[#006c68]">{es ? "Iniciar sesión" : "Sign in"}</Link>
           </div>
         </div>

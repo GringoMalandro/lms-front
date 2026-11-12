@@ -1,3 +1,4 @@
+import { academyAccountPath, isAcademyHost } from '@/lib/independizar/academy'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentTenantId } from '@/lib/supabase/tenant'
 import { type EmailOtpType } from '@supabase/supabase-js'
@@ -16,7 +17,15 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   const token_hash = searchParams.get('token_hash')
   const type = searchParams.get('type') as EmailOtpType | null
   const requestedNext = searchParams.get('next')
-  const next = getSafeNextPath(requestedNext, '/')
+  const isAcademy = isAcademyHost(request.headers.get('host'))
+  const next = getSafeNextPath(requestedNext, isAcademy ? academyAccountPath : '/')
+  const code = searchParams.get('code')
+
+  if (isAcademy && code) {
+    const supabase = await createClient()
+    const { error } = await supabase.auth.exchangeCodeForSession(code)
+    redirect(localizePath(error ? '/auth/error' : next, locale))
+  }
 
   if (token_hash && type) {
     const supabase = await createClient()
@@ -31,6 +40,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       redirect(localizePath(`/auth/update-password${error ? '?error=invalid_link' : ''}`, locale))
     }
     if (!error) {
+      if (isAcademy) redirect(localizePath(next, locale))
+
       // Get tenant from current subdomain (middleware sets header)
       const tenantId = await getCurrentTenantId()
 
